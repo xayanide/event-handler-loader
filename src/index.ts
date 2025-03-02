@@ -3,7 +3,7 @@ import * as nodeUrl from "node:url";
 import * as nodeFsPromises from "node:fs/promises";
 import type { EventEmitter } from "node:events";
 import type { PathLike } from "node:fs";
-import type { EventHandler, EventHandlerKeys, EventHandlerModule, LoadEventHandlersOptions } from "./types.js";
+import type { EventExecute, EventHandler, EventHandlerKeys, EventHandlerModule, LoadEventHandlersOptions } from "./types.js";
 
 const EVENT_EMITTER_ADD_LISTENER_METHOD_NAMES = ["on", "once", "addListener", "prependListener", "prependOnceListener"];
 const DEFAULT_EXPORT_NAME = "default";
@@ -35,13 +35,13 @@ async function isValidDirectory(dirPath: PathLike) {
     }
 }
 
-function isAsyncFunction(fn: Function) {
+function isAsyncFunction(fn: EventExecute) {
     return fn.constructor.name === "AsyncFunction";
 }
 
-function hasAddListenerMethods(object: any): boolean {
+function hasAddListenerMethods(object: EventEmitter): boolean {
     function hasMethod(methodName: string) {
-        const method = object[methodName];
+        const method = (object as unknown as { [key: string]: unknown })[methodName];
         if (!method || typeof method !== "function") {
             return false;
         }
@@ -56,25 +56,27 @@ I will not use arrow functions or anonymous functions for these.
 They'll remain named for verbosity and verbose error stack traces.
 Note: isAsyncFunction cannot detect if a regular non-async function is async if the regular non-async function returns a Promise.
 */
-function getAsyncAwareListener(executeMethod: Function, listenerPrependedArgs: unknown[]) {
+function getAsyncAwareListener(executeMethod: EventExecute, listenerPrependedArgs: unknown[]) {
     /**
     The listenerPrependedArgs option serves as a way to prepend custom values to the arguments
     passed to the event handlers' execute() method when an event is emitted.
     */
     if (isAsyncFunction(executeMethod)) {
-        async function asyncListener(...listenerEmittedArgs: unknown[]): Promise<any> {
+        async function asyncListener(...listenerEmittedArgs: unknown[]) {
             if (executeMethod) {
                 const listenerArgs = listenerPrependedArgs.length > 0 ? [...listenerPrependedArgs, ...listenerEmittedArgs] : listenerEmittedArgs;
                 return await executeMethod(...listenerArgs);
             }
+            return
         }
         return asyncListener;
     } else {
-        function syncListener(...listenerEmittedArgs: unknown[]): any {
+        function syncListener(...listenerEmittedArgs: unknown[]) {
             if (executeMethod) {
                 const listenerArgs = listenerPrependedArgs.length > 0 ? [...listenerPrependedArgs, ...listenerEmittedArgs] : listenerEmittedArgs;
                 return executeMethod(...listenerArgs);
             }
+            return
         }
         return syncListener;
     }
