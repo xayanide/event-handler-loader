@@ -2,7 +2,7 @@ import globals from "globals";
 import eslintPluginJs from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
 import stylisticEslintPlugin from "@stylistic/eslint-plugin";
-import tseslint from 'typescript-eslint';
+import tseslint from "typescript-eslint";
 
 const stylisticFormattingRules = {
     "@stylistic/no-trailing-spaces": ["error", { skipBlankLines: false, ignoreComments: true }],
@@ -40,7 +40,7 @@ const eslintCodeQualityRules = {
  * @see https://eslint.org/docs/latest/use/configure
  * @type {import('eslint').Linter.Config[]}
  */
-export default [
+export default tseslint.config(
     eslintPluginJs.configs.recommended,
     tseslint.configs.recommended,
     eslintConfigPrettier,
@@ -57,4 +57,4 @@ export default [
     https://github.com/eslint/eslint/discussions/18304#discussioncomment-9069706
     */
     { ignores: ["**/node_modules/", "**/.git/", "**/logs/", "**/dist/", "**/sandbox/"] },
-];
+);
