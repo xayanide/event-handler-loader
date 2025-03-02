@@ -9,7 +9,7 @@ Working with events usually means manually setting up event handlers on an Event
 This utility simplifies things by automatically loading event handlers from a directory and attaching them to an EventEmitter-like instance—basically, any object with the same event-handling methods as Node.js’ EventEmitter. The tradeoff? It follows a somewhat fixed structure and might not mesh well with more OOP-heavy approaches.
 
 > [!NOTE]
-> An *"EventEmitter-like instance"* is any object that implements the same event-handling methods as Node.js's `EventEmitter`.
+> An *"EventEmitter-like instance"* is any object that implements the same event-handling methods as Node.js' `EventEmitter`.
 > This means it must have the following methods:
 >
 > - `on(event, listener)`: Registers a listener for an event.
