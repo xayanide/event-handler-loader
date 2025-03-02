@@ -2,6 +2,12 @@
 
 A simple and lightweight way load event handlers from a directory and attach them to any EventEmitter-like instance. It supports two ways of importing files, flexible event handler structures, and lets you customize how listeners are added.
 
+## Installation
+
+```sh
+npm install event-handler-loader
+```
+
 ## Intro
 
 Working with events usually means manually setting up event handlers on an EventEmitter instance. It’s okhi for small projects, but as things grow, it can quickly become messy and repetitive.
@@ -17,12 +23,6 @@ This utility simplifies things by automatically loading event handlers from a di
 > - `addListener(event, listener)`: Alias for `on()`.
 > - `prependListener(event, listener)`: Adds a listener before any existing ones.
 > - `prependOnceListener(event, listener)`: Like `once()`, but added to the front of the listener queue.
-
-## Installation
-
-```sh
-npm install event-handler-loader
-```
 
 ## Usage
 
@@ -219,9 +219,9 @@ You can also choose to omit the options object to stick to the default configura
 await loadEventHandlers("./path/to/eventHandlers", objectWithEventEmitterMethods);
 ```
 
-### 3. Handling Async Event Handlers
+### Handling Async Event Handlers
 
-This is also handled internally.
+These kind of handlers are also handled internally.
 
 ```js
 export default {
