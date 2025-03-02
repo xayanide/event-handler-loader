@@ -124,7 +124,7 @@ async function importEventHandler(fileUrlHref: string, exportType: string, prefe
         for (const exportName in importedModule) {
             const eventHandler = importedModule[exportName];
             if (!eventHandler || !Object.prototype.hasOwnProperty.call(importedModule, exportName) || exportName === DEFAULT_EXPORT_NAME) {
-                throw new Error(`Invalid event handler module. Must be a named export. Unable to verify named export '${exportName}' in module: ${fileUrlHref}`);
+                throw new Error(`Invalid event handler module. Must be a named export. Unable to verify named export '${exportName}'. Module: ${fileUrlHref}`);
             }
             exports.push(eventHandler);
         }
@@ -137,8 +137,8 @@ async function importEventHandler(fileUrlHref: string, exportType: string, prefe
                 isNamedExportType
                     ? `Invalid event handler module. Must be a named export. ${
                           exportName === DEFAULT_NAMED_EXPORT ? "Unable to verify named export" : "Unable to verify preferred named export"
-                      } '${exportName}' in module: ${fileUrlHref}`
-                    : `Invalid event handler module. Must be a default export. Unable to verify default export '${exportName}' in module: ${fileUrlHref}`,
+                      } '${exportName}'. Module: ${fileUrlHref}`
+                    : `Invalid event handler module. Must be a default export. Unable to verify default export '${exportName}'. Module: ${fileUrlHref}`,
             );
         }
         return [eventHandler];
