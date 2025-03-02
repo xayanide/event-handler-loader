@@ -63,20 +63,14 @@ function getAsyncAwareListener(executeMethod: EventExecute, listenerPrependedArg
     */
     if (isAsyncFunction(executeMethod)) {
         async function asyncListener(...listenerEmittedArgs: unknown[]) {
-            if (executeMethod) {
-                const listenerArgs = listenerPrependedArgs.length > 0 ? [...listenerPrependedArgs, ...listenerEmittedArgs] : listenerEmittedArgs;
-                return await executeMethod(...listenerArgs);
-            }
-            return;
+            const listenerArgs = listenerPrependedArgs.length > 0 ? [...listenerPrependedArgs, ...listenerEmittedArgs] : listenerEmittedArgs;
+            return await executeMethod(...listenerArgs);
         }
         return asyncListener;
     } else {
         function syncListener(...listenerEmittedArgs: unknown[]) {
-            if (executeMethod) {
-                const listenerArgs = listenerPrependedArgs.length > 0 ? [...listenerPrependedArgs, ...listenerEmittedArgs] : listenerEmittedArgs;
-                return executeMethod(...listenerArgs);
-            }
-            return;
+            const listenerArgs = listenerPrependedArgs.length > 0 ? [...listenerPrependedArgs, ...listenerEmittedArgs] : listenerEmittedArgs;
+            return executeMethod(...listenerArgs);
         }
         return syncListener;
     }
