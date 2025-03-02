@@ -91,7 +91,7 @@ function addEventListener(
     if (!nameValue || (typeof nameValue !== "string" && typeof nameValue !== "symbol")) {
         throw new Error(`Invalid value type for key ${nameKeyName}: '${typeof nameValue}'. Must be a non-empty string or symbol. Module: ${fileUrlHref}`);
     }
-    if (typeof isOnceValue !== "boolean") {
+    if (isOnceValue && typeof isOnceValue !== "boolean") {
         throw new Error(`Invalid value type for key ${isOnceKeyName}: '${typeof isOnceValue}'. Must be a boolean. Module: ${fileUrlHref}`);
     }
     if (isPrependValue && typeof isPrependValue !== "boolean") {

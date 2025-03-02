@@ -159,7 +159,7 @@ describe("event-handler-loader", () => {
             ).rejects.toThrow();
         });
 
-        it("handle invalid event handler keys: name, isOnce, execute. (Should be able to omit isPrepend)", async () => {
+        it("handle invalid event handler keys: name, execute. (Should be able to omit isOnce and isPrepend)", async () => {
             await expect(loadEventHandlers(invalidKeysDir, eventEmitter)).rejects.toThrow();
         });
 

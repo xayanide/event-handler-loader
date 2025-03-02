@@ -78,7 +78,7 @@ With `exportType: named`, it'll look for exports with a specific configured `pre
 export const handler = {
     // Keys follow as configured preferredEventHandlerKeys: { name: "eventName", isOnce: "once", isPrepend: "prepend", execute: "run" }
     eventName: "uncaughtException",
-    // isPrepend key can be omitted. Only name, isOnce, and execute keys are required.
+    // isOnce and isPrepend keys can be omitted. Only name, and execute keys are required.
     prepend: false,
     once: false,
     run: function (_myString: string, _object: unknown, error: Error) {
@@ -103,7 +103,7 @@ export default {
     // Keys follow as configured preferredEventHandlerKeys: { name: "eventName", isOnce: "once", isPrepend: "prepend", execute: "run" }
     eventName: "uncaughtException",
     once: false,
-    // isPrepend key can be omitted. Only name, isOnce, and execute keys are required.
+    // isOnce and isPrepend keys can be omitted. Only name, and execute keys are required.
     prepend: false,
     // Method emits the prepended values as configured: listenerPrependedArgs: ["myString", { number: 1 }],
     run: function (_myString: string, _object: unknown, error: Error) {
@@ -152,8 +152,8 @@ import type { Client } from "discord.js";
 
 export default {
     name: Events.ClientReady,
+    // isOnce and isPrepend keys can be omitted. Only name, and execute keys are required.
     isOnce: false,
-    // You can omit isPrepend property. The rest are required.
     isPrepend: false,
     execute: function (readyClient: Client<true>) {
         console.log(`Ready! Logged in as ${readyClient.user.tag}`);
@@ -172,7 +172,7 @@ import type { Client } from "discord.js";
 export const eventHandler = {
     name: Events.ClientReady,
     isOnce: false,
-    // You can omit isPrepend property. The name, isOnce, and execute are required.
+    // isOnce and isPrepend keys can be omitted. Only name, and execute keys are required.
     isPrepend: false,
     execute: function (readyClient: Client<true>) {
         console.log(`Ready! Logged in as ${readyClient.user.tag}`);
@@ -216,7 +216,7 @@ await loadEventHandlers("./path/to/eventHandlers", objectWithEventEmitterMethods
 });
 ```
 
-You can also choose to omit the options object to stick to the default configuration
+You can also choose to omit the options object entirely and stick to the default configuration
 
 ```js
 await loadEventHandlers("./path/to/eventHandlers", objectWithEventEmitterMethods);
