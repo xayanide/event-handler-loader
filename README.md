@@ -12,7 +12,7 @@ npm install event-handler-loader
 
 ### 1. Creating Event Handlers
 
-Each event handler should be a module exporting an object with the required properties: `name`, `isOnce`, `execute`.
+Each event handler should be a JavaScript / TypeScript module with any file name that exports an object with the required properties: `name`, `isOnce`, `execute`.
 
 With discord.js bot events as an example use case.
 
@@ -116,7 +116,7 @@ export default {
     name: "fetchData",
     isOnce: true,
     async execute() {
-        const response = await fetch("https://api.example.com/data")
+        const response = await fetch("https://dog.ceo/api/breeds/image/random")
         const data = await response.json()
         console.log("Fetched data:", data);
     }
