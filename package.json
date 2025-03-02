@@ -1,5 +1,5 @@
 {
-  "name": "event-handler-loader",
+  "name": "@xayanide/event-handler-loader",
   "type": "module",
   "version": "1.0.1",
   "description": "",
@@ -11,9 +11,8 @@
     "import": "./dist/index.js",
     "types": "./dist/index.d.ts"
   },
-  "repository": "xayanide/event-handler-loader",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org"
+  "repository": {
+    "url": "git+https://github.com/xayanide/event-handler-loader.git"
   },
   "scripts": {
     "start": "node dist/index.js",
