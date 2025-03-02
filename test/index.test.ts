@@ -6,7 +6,7 @@ import { loadEventHandlers } from "../src/index";
 import type { EventEmitter } from "node:events";
 
 const eventHandlers = nodePath.join(nodePath.dirname(nodeUrl.fileURLToPath(import.meta.url)), "events");
-const invalidKeysDir = nodePath.join(eventHandlers, "invalidKeysDir");
+const invalidKeysDir = nodePath.join(eventHandlers, "invalidKeys");
 const invalidValuesDir = nodePath.join(eventHandlers, "invalidValues");
 const defaultDir = nodePath.join(eventHandlers, "default");
 const namedDir = nodePath.join(eventHandlers, "named");
@@ -160,7 +160,7 @@ describe("event-handler-loader", () => {
         });
 
         it("handle invalid event handler keys: name, execute. (Should be able to omit isOnce and isPrepend)", async () => {
-            await expect(loadEventHandlers(invalidKeysDir, eventEmitter)).rejects.toThrow();
+            await expect(loadEventHandlers(invalidKeysDir, eventEmitter, { exportType: "named" })).rejects.toThrow();
         });
 
         it("handle invalid event handler values: string, boolean, function", async () => {
