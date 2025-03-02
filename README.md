@@ -68,7 +68,7 @@ process.emit("uncaughtException", new Error("MyDeadlyError"));
 
 #### Creating Event Handlers
 
-With `exportType: named`, it'll look for exports with a specific customized name `handler` in this example. It's `eventHandler` by default.
+With `exportType: named`, it'll look for exports with a specific configured `preferredNamedExport: handler` in this example. It's `eventHandler` by default.
 
 ```ts
 // src/eventHandlers/process/named.ts
@@ -92,7 +92,7 @@ export const handler = {
 };
 ```
 
-With `exportType: default`, it'll look for export defaults exclusively.
+With `exportType: default`, it'll look for default exports exclusively, like so:
 
 ```ts
 // src/eventHandlers/process/default.ts
