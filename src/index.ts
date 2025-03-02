@@ -95,16 +95,16 @@ function addEventListener(
     const isPrependValue = eventHandler[isPrependKeyName as "isPrepend"];
     const executeMethod = eventHandler[executeKeyName as "execute"];
     if (!nameValue || (typeof nameValue !== "string" && typeof nameValue !== "symbol")) {
-        throw new Error(`Invalid value type for key ${nameKeyName}: '${typeof nameValue}'. Must be a non-empty string or symbol. Module: ${fileUrlHref}`);
+        throw new Error(`Invalid value type for key ${nameKeyName}: '${nameValue}'. Must be a non-empty string or symbol. Module: ${fileUrlHref}`);
     }
     if (isOnceValue && typeof isOnceValue !== "boolean") {
-        throw new Error(`Invalid value type for key ${isOnceKeyName}: '${typeof isOnceValue}'. Must be a boolean. Module: ${fileUrlHref}`);
+        throw new Error(`Invalid value type for key ${isOnceKeyName}: '${isOnceValue}'. Must be a boolean. Module: ${fileUrlHref}`);
     }
     if (isPrependValue && typeof isPrependValue !== "boolean") {
-        throw new Error(`Invalid value type for key ${isPrependKeyName}: '${typeof isPrependValue}'. Must be a boolean. Module: ${fileUrlHref}`);
+        throw new Error(`Invalid value type for key ${isPrependKeyName}: '${isPrependValue}'. Must be a boolean. Module: ${fileUrlHref}`);
     }
     if (typeof executeMethod !== "function") {
-        throw new Error(`Invalid method for key ${executeKeyName}: '${typeof executeMethod}'. Must be a function. Module: ${fileUrlHref}`);
+        throw new Error(`Invalid method for key ${executeKeyName}: '${executeMethod}'. Must be a function. Module: ${fileUrlHref}`);
     }
     const listener = getAsyncAwareListener(executeMethod, listenerPrependedArgs);
     if (isOnceValue) {
