@@ -1,5 +1,5 @@
 {
-  "name": "@xayanide/event-handler-loader",
+  "name": "event-handler-loader",
   "type": "module",
   "version": "1.1.0",
   "description": "",
@@ -12,7 +12,7 @@
     "types": "./dist/index.d.ts"
   },
   "repository": {
-    "url": "git+https://github.com/xayanide/event-handler-loader.git"
+    "url": "xayanide/event-handler-loader"
   },
   "scripts": {
     "start": "node dist/index.js",
