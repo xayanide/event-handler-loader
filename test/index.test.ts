@@ -72,6 +72,25 @@ describe("event-handler-loader", () => {
             expect(eventEmitter.listenerCount("multiHandlerEvent")).toBe(0);
         });
 
+        it("load event handlers with specifically ommited preferredEventHandlerKeys", async () => {
+            // Omit name
+            await expect(
+                loadEventHandlers(defaultDir, eventEmitter, { preferredEventHandlerKeys: { isOnce: "isOnce", isPrepend: "isPrepend", execute: "execute" } }),
+            ).resolves.toBeTruthy();
+            // Omit isOnce
+            await expect(
+                loadEventHandlers(defaultDir, eventEmitter, { preferredEventHandlerKeys: { name: "name", isPrepend: "isPrepend", execute: "execute" } }),
+            ).resolves.toBeTruthy();
+            // Omit isPrepend
+            await expect(
+                loadEventHandlers(defaultDir, eventEmitter, { preferredEventHandlerKeys: { name: "name", isOnce: "isOnce", execute: "execute" } }),
+            ).resolves.toBeTruthy();
+            // Omit execute
+            await expect(
+                loadEventHandlers(defaultDir, eventEmitter, { preferredEventHandlerKeys: { name: "name", isOnce: "isOnce", isPrepend: "isPrepend" } }),
+            ).resolves.toBeTruthy();
+        });
+
         it("handle invalid directories", async () => {
             await expect(loadEventHandlers("/aaaaaaaaaaaaa", eventEmitter)).rejects.toThrow();
         });
@@ -115,22 +134,28 @@ describe("event-handler-loader", () => {
             await expect(
                 loadEventHandlers(defaultDir, eventEmitter, { preferredEventHandlerKeys: { name: "name", isOnce: "isOnce", isPrepend: "", execute: "execute" } }),
             ).rejects.toThrow();
-                await expect(
-                    loadEventHandlers(defaultDir, eventEmitter, { preferredEventHandlerKeys: { name: "name", isOnce: "isOnce", isPrepend: "isPrepend", execute: "" } }),
-                ).rejects.toThrow();
+            await expect(
+                loadEventHandlers(defaultDir, eventEmitter, { preferredEventHandlerKeys: { name: "name", isOnce: "isOnce", isPrepend: "isPrepend", execute: "" } }),
+            ).rejects.toThrow();
             await expect(
                 loadEventHandlers(defaultDir, eventEmitter, {
                     preferredEventHandlerKeys: { name: 1 as unknown as string, isOnce: "isOnce", isPrepend: "isPrepend", execute: "execute" },
                 }),
             ).rejects.toThrow();
             await expect(
-                loadEventHandlers(defaultDir, eventEmitter, { preferredEventHandlerKeys: { name: "name", isOnce: 1 as unknown as string, isPrepend: "isPrepend", execute: "execute" } }),
+                loadEventHandlers(defaultDir, eventEmitter, {
+                    preferredEventHandlerKeys: { name: "name", isOnce: 1 as unknown as string, isPrepend: "isPrepend", execute: "execute" },
+                }),
             ).rejects.toThrow();
             await expect(
-                loadEventHandlers(defaultDir, eventEmitter, { preferredEventHandlerKeys: { name: "name", isOnce: "isOnce", isPrepend: 1 as unknown as string, execute: "execute" } }),
+                loadEventHandlers(defaultDir, eventEmitter, {
+                    preferredEventHandlerKeys: { name: "name", isOnce: "isOnce", isPrepend: 1 as unknown as string, execute: "execute" },
+                }),
             ).rejects.toThrow();
             await expect(
-                loadEventHandlers(defaultDir, eventEmitter, { preferredEventHandlerKeys: { name: "name", isOnce: "isOnce", isPrepend: "isPrepend", execute: 1 as unknown as string } }),
+                loadEventHandlers(defaultDir, eventEmitter, {
+                    preferredEventHandlerKeys: { name: "name", isOnce: "isOnce", isPrepend: "isPrepend", execute: 1 as unknown as string },
+                }),
             ).rejects.toThrow();
         });
 
