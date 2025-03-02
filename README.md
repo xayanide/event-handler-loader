@@ -5,7 +5,7 @@ A simple and lightweight way load event handlers from a directory and attach the
 ## Installation
 
 ```sh
-npm install @xayanide/event-handler-loader
+npm install event-handler-loader
 ```
 
 ## Intro
