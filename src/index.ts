@@ -23,7 +23,7 @@ const DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS = {
     exportType: DEFAULT_EXPORT_TYPE,
     listenerPrependedArgs: [],
     preferredNamedExport: DEFAULT_NAMED_EXPORT,
-    preferredEventHandlerKeys: DEFAULT_EVENT_HANDLER_KEY_NAMES,
+    preferredEventHandlerKeys: {},
 };
 
 async function isValidDirectory(dirPath: PathLike) {
@@ -67,7 +67,7 @@ function getAsyncAwareListener(executeMethod: EventExecute, listenerPrependedArg
                 const listenerArgs = listenerPrependedArgs.length > 0 ? [...listenerPrependedArgs, ...listenerEmittedArgs] : listenerEmittedArgs;
                 return await executeMethod(...listenerArgs);
             }
-            return
+            return;
         }
         return asyncListener;
     } else {
@@ -76,7 +76,7 @@ function getAsyncAwareListener(executeMethod: EventExecute, listenerPrependedArg
                 const listenerArgs = listenerPrependedArgs.length > 0 ? [...listenerPrependedArgs, ...listenerEmittedArgs] : listenerEmittedArgs;
                 return executeMethod(...listenerArgs);
             }
-            return
+            return;
         }
         return syncListener;
     }
@@ -158,7 +158,7 @@ async function loadEventHandlers(dirPath: string, eventEmitterLike: EventEmitter
     const exportType = eventHandlerOptions.exportType;
     const listenerPrependedArgs = eventHandlerOptions.listenerPrependedArgs;
     const preferredNamedExport = eventHandlerOptions.preferredNamedExport;
-    const preferredEventHandlerKeys = eventHandlerOptions.preferredEventHandlerKeys;
+    const preferredEventHandlerKeys = { ...DEFAULT_EVENT_HANDLER_KEY_NAMES, ...eventHandlerOptions.preferredEventHandlerKeys };
     const { name: nameKeyName, isOnce: isOnceKeyName, isPrepend: isPrependKeyName, execute: executeKeyName } = preferredEventHandlerKeys;
     /** Use 'not' operator to not omit undefined and empty strings passed in options */
     if (!nameKeyName || typeof nameKeyName !== "string") {
