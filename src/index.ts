@@ -76,23 +76,29 @@ function getAsyncAwareListener(executeMethod: EventExecute, listenerPrependedArg
     }
 }
 
-function addEventListener(eventHandler: EventHandler, preferredEventHandlerKeys: EventHandlerKeys, eventEmitterLike: EventEmitter, listenerPrependedArgs: unknown[]) {
+function addEventListener(
+    eventEmitterLike: EventEmitter,
+    eventHandler: EventHandler,
+    preferredEventHandlerKeys: EventHandlerKeys,
+    listenerPrependedArgs: unknown[],
+    fileUrlHref: string,
+) {
     const { name: nameKeyName, isOnce: isOnceKeyName, isPrepend: isPrependKeyName, execute: executeKeyName } = preferredEventHandlerKeys;
     const nameValue = eventHandler[nameKeyName as "name"];
     const isOnceValue = eventHandler[isOnceKeyName as "isOnce"];
     const isPrependValue = eventHandler[isPrependKeyName as "isPrepend"];
     const executeMethod = eventHandler[executeKeyName as "execute"];
     if (!nameValue || (typeof nameValue !== "string" && typeof nameValue !== "symbol")) {
-        throw new Error(`Invalid value type for key ${nameKeyName}: '${typeof nameValue}'. Must be a non-empty string or symbol.`);
+        throw new Error(`Invalid value type for key ${nameKeyName}: '${typeof nameValue}'. Must be a non-empty string or symbol. Module: ${fileUrlHref}`);
     }
     if (typeof isOnceValue !== "boolean") {
-        throw new Error(`Invalid value type for key ${isOnceKeyName}: '${typeof isOnceValue}'. Must be a boolean.`);
+        throw new Error(`Invalid value type for key ${isOnceKeyName}: '${typeof isOnceValue}'. Must be a boolean. Module: ${fileUrlHref}`);
     }
     if (isPrependValue && typeof isPrependValue !== "boolean") {
-        throw new Error(`Invalid value type for key ${isPrependKeyName}: '${typeof isPrependValue}'. Must be a boolean.`);
+        throw new Error(`Invalid value type for key ${isPrependKeyName}: '${typeof isPrependValue}'. Must be a boolean. Module: ${fileUrlHref}`);
     }
     if (typeof executeMethod !== "function") {
-        throw new Error(`Invalid method for key ${executeKeyName}: '${typeof executeMethod}'. Must be a function.`);
+        throw new Error(`Invalid method for key ${executeKeyName}: '${typeof executeMethod}'. Must be a function. Module: ${fileUrlHref}`);
     }
     const listener = getAsyncAwareListener(executeMethod, listenerPrependedArgs);
     if (isOnceValue) {
@@ -188,7 +194,7 @@ async function loadEventHandlers(dirPath: string, eventEmitterLike: EventEmitter
         const fileUrlHref = nodeUrl.pathToFileURL(filePath).href;
         const exports = await importEventHandler(fileUrlHref, exportType, preferredNamedExport);
         for (const eventHandler of exports) {
-            addEventListener(eventHandler, preferredEventHandlerKeys, eventEmitterLike, listenerPrependedArgs);
+            addEventListener(eventEmitterLike, eventHandler, preferredEventHandlerKeys, listenerPrependedArgs, fileUrlHref);
         }
     }
     if (importMode === "parallel") {
