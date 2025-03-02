@@ -11,12 +11,9 @@
     "import": "./dist/index.js",
     "types": "./dist/index.d.ts"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/xayanide/event-handler-loader.git"
-  },
+  "repository": "xayanide/event-handler-loader",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://registry.npmjs.org"
   },
   "scripts": {
     "start": "node dist/index.js",
