@@ -84,6 +84,12 @@ function addEventListener(
     fileUrlHref: string,
 ) {
     const { name: nameKeyName, isOnce: isOnceKeyName, isPrepend: isPrependKeyName, execute: executeKeyName } = preferredEventHandlerKeys;
+    if ((nameKeyName as "name") in eventHandler === false) {
+        throw new Error(`Unable to find an exported property '${nameKeyName}'. Module: ${fileUrlHref}`);
+    }
+    if ((executeKeyName as "execute") in eventHandler === false) {
+        throw new Error(`Unable to find an exported property '${executeKeyName}'. Module: ${fileUrlHref}`);
+    }
     const nameValue = eventHandler[nameKeyName as "name"];
     const isOnceValue = eventHandler[isOnceKeyName as "isOnce"];
     const isPrependValue = eventHandler[isPrependKeyName as "isPrepend"];
