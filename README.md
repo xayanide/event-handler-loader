@@ -91,7 +91,7 @@ await loadEventHandlers("./path/to/eventHandlers", objectWithEventEmitterMethods
     exportType: "named",
     // Default value: eventHandler (Case-sensitive!)
     // Options: non-empty string or "*"
-    // Setting the preferred export name to '*' will make the module import all named exports within a module that follows the event handler structure regardless of how they're named.
+    // Setting the preferred export name to '*' with exportType set as named will make the module import all named exports within a module that follows the event handler structure regardless of how they're named.
     // Preferred export name to look for inside a module
     preferredNamedExport: "myCustomEventHandler",
     // Default value: []
