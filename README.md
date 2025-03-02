@@ -26,14 +26,127 @@ npm install event-handler-loader
 
 ## Usage
 
-### 1. Creating Event Handlers
+#### Creating Event Handlers
 
-Each event handler should be a JavaScript/TypeScript module with any file name that exports an object with the required properties: `name`, `isOnce`, `execute`.
+Each event handler should be a JavaScript/TypeScript module with *any file name* that exports an object with the required properties: `name`, `isOnce`, `execute`.
 
-With discord.js bot events as an example use case.
+### Simplest Example with Node.js' `process` Events
+
+With Node.js' `process` as the simplest example to demonstrate how it can be used.
+
+#### Loading Event Handlers
 
 ```ts
-// src/eventHandlers/discordClient/clientReady
+// src/index.ts
+import * as nodePath from "node:path";
+import * as nodeUrl from "node:url";
+import { loadEventHandlers } from "event-handler-loader";
+
+const eventHandlersFolder = nodePath.join(nodePath.dirname(nodeUrl.fileURLToPath(import.meta.url)), "eventHandlers");
+const processEventsFolder = nodePath.join(eventHandlersFolder, "process");
+
+// This is with all configuration options exposed and changed from defaults to demonstrate what can be configured.
+await loadEventHandlers(processEventsFolder, process, {
+    // Default value: default
+    exportType: "named",
+    // Default value: parallel
+    importMode: "sequential",
+    // Default value: "eventHandler"
+    preferredNamedExport: "handler",
+    // Default value: { name: "name", isOnce: "isOnce", isPrepend: "isPrepend", execute: "execute" }
+    preferredEventHandlerKeys: { name: "eventName", isOnce: "once", isPrepend: "prepend", execute: "run" },
+    // Default value: []
+    listenerPrependedArgs: ["myString", { number: 1 }],
+});
+
+// Simulate an uncaughtException event.
+process.emit("uncaughtException", new Error("MyDeadlyError"));
+
+// Other way of simulating an uncaughtException in this case
+// throw new Error("MyDeadlyError")
+```
+
+#### Creating Event Handlers
+
+With `exportType: named`, it'll look for exports with a specific customized name `handler` in this example. It's `eventHandler` by default.
+
+```ts
+// src/eventHandlers/process/named.ts
+
+// exportType: named
+// preferredNamedExport: handler
+export const handler = {
+    // Keys follow as configured preferredEventHandlerKeys: { name: "eventName", isOnce: "once", isPrepend: "prepend", execute: "run" }
+    eventName: "uncaughtException",
+    // isPrepend key can be omitted. Only name, isOnce, and execute keys are required.
+    prepend: false,
+    once: false,
+    run: function (_myString: string, _object: unknown, error: Error) {
+        // "myString"
+        console.log("1st custom prepended parameter", _myString);
+        // { number: 1 }
+        console.log("2nd custom prepended parameter", _object);
+        // Error: MyDeadlyError
+        console.log(`3rd actual emitted parameter:\nEncountered an uncaught exception\n${error.message}\n${error.stack}`);
+    },
+};
+```
+
+With `exportType: default`, it'll look for export defaults exclusively.
+
+```ts
+// src/eventHandlers/process/default.ts
+
+// exportType: default
+// (ignored) preferredNamedExport: handler (preferredNamedExport is ignored because it's configured to find default exports only)
+export default {
+    // Keys follow as configured preferredEventHandlerKeys: { name: "eventName", isOnce: "once", isPrepend: "prepend", execute: "run" }
+    eventName: "uncaughtException",
+    once: false,
+    // isPrepend key can be omitted. Only name, isOnce, and execute keys are required.
+    prepend: false,
+    // Method emits the prepended values as configured: listenerPrependedArgs: ["myString", { number: 1 }],
+    run: function (_myString: string, _object: unknown, error: Error) {
+        // "myString"
+        console.log("1st custom prepended parameter", _myString);
+        // { number: 1 }
+        console.log("2nd custom prepended parameter", _object);
+        // Error: MyDeadlyError
+        console.log(`3rd actual emitted parameter:\nEncountered an uncaught exception\n${error.message}\n${error.stack}`);
+    },
+};
+```
+
+### Example with Discord.js' `Client` Events
+
+With Discord.js' `Client` as an example.
+
+#### Loading Event Handlers
+
+```ts
+// src/index.ts
+import * as nodePath from "node:path";
+import * as nodeUrl from "node:url";
+import * as discordJs from "discord.js";
+import { loadEventHandlers } from "event-handler-loader";
+
+const eventHandlersFolder = nodePath.join(nodePath.dirname(nodeUrl.fileURLToPath(import.meta.url)), "eventHandlers");
+const discordClientEventsFolder = nodePath.join(eventHandlersFolder, "discordClient");
+
+const discordClient = new discordJs.Client({ intents: [discordJs.GatewayIntentBits.Guilds] });
+await loadEventHandlers(discordClientEventsFolder, discordClient);
+
+try {
+    await discordClient.login("VERY_SECURE_TOKEN_INDEED");
+} catch (loginErr) {
+    console.error(`DiscordClient#login\n${loginErr}`);
+}
+```
+
+#### Creating Event Handlers
+
+```ts
+// src/eventHandlers/discordClient/clientReady.ts
 import { Events } from "discord.js";
 import type { Client } from "discord.js";
 
@@ -51,7 +164,7 @@ export default {
 You can also use named exports:
 
 ```ts
-// src/eventHandlers/discordClient/clientReady
+// src/eventHandlers/discordClient/clientReady.ts
 import { Events } from "discord.js";
 import type { Client } from "discord.js";
 
@@ -65,30 +178,6 @@ export const eventHandler = {
         console.log(`Ready! Logged in as ${readyClient.user.tag}`);
     },
 };
-```
-
-### 2. Loading Event Handlers
-
-With discord.js bot events as an example use case.
-
-```ts
-// src/index
-import * as nodePath from "node:path";
-import * as nodeUrl from "node:url";
-import * as discordJs from "discord.js";
-import { loadEventHandlers } from "event-handler-loader";
-
-const eventHandlersFolder = nodePath.join(nodePath.dirname(nodeUrl.fileURLToPath(import.meta.url)), "eventHandlers");
-const discordClientEventsFolder = nodePath.join(eventHandlersFolder, "discordClient");
-
-const discordClient = new discordJs.Client({ intents: [discordJs.GatewayIntentBits.Guilds] });
-await loadEventHandlers(discordClientEventsFolder, discordClient);
-
-try {
-    await discordClient.login("VERY_SECURE_TOKEN_INDEED");
-} catch (loginErr) {
-    console.error(`DiscordClient#login\n${loginErr}`);
-}
 ```
 
 ### Optional Options
@@ -148,9 +237,9 @@ export default {
 
 ## Error Handling
 
-If an event handler is missing required keys or receives invalid types and values with those keys, an error will be thrown appropriately.
+If an event handler is missing required keys or receives invalid types and values with those keys, an error will be thrown appropriately to let you know.
 
-For example.
+For instance:
 
 `exportType: "default"` (`default` by default) will look for event handler modules with default exports only.
 
