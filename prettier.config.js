@@ -4,7 +4,6 @@
  */
 export default {
     /** Defaulted settings: */
-    parser: "typescript",
     trailingComma: "all",
     semi: true,
     singleQuote: false,
@@ -20,6 +19,7 @@ export default {
     1080p Screen with VS Code Zoom Level 0: 211
     1080p Screen with VS Code Zoom Level 1: 172
     */
+    parser: "typescript",
     printWidth: 172,
     tabWidth: 4,
     quoteProps: "consistent",
