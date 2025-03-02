@@ -1,0 +1,29 @@
+name: BranchSyncer
+on:
+  workflow_run:
+    workflows: [VersionReleaser]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  sync-branch:
+    name: Sync branch 'dev' with 'main'
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.SRGH_TOKEN }}
+      - name: Sync branch 'dev' with 'main'
+        run: |
+          git checkout main
+          git fetch origin
+          git checkout dev
+          git pull --rebase
+          git merge origin/main
+          git push origin dev

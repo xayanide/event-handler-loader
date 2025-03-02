@@ -1,0 +1,31 @@
+name: PRAutoMerger
+on:
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+      - labeled
+      - unlabeled
+      - ready_for_review
+  workflow_dispatch:
+    inputs:
+      pull-request:
+        description: Choose a pull request number
+        required: false
+
+jobs:
+  merge-pr:
+    name: Enable auto-merge if PR is ready
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable auto-merge if PR is ready
+        uses: reitermarkus/automerge@v2
+        with:
+          token: ${{ secrets.SRGH_TOKEN }}
+          merge-method: squash
+          squash-commit-title: ${pull_request.title} (#${pull_request.number})
+          do-not-merge-labels: 'hold'
+          required-labels: 'approved'
+          pull-request: ${{ github.event.inputs.pull-request }}

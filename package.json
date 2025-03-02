@@ -1,0 +1,45 @@
+{
+  "name": "event-handler-loader",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "author": "xayanide",
+  "license": "GPL-3.0-only",
+  "main": "dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "import": "./dist/index.js",
+    "types": "./dist/index.d.ts"
+  },
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "npm run build:base && npm run start",
+    "clean": "rimraf dist",
+    "build:base": "tsc",
+    "build:watch": "npm run build:base -- --watch",
+    "build": "npm run clean && npm run build:base",
+    "test:base": "cross-env NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest --verbose --detectOpenHandles",
+    "test:coverage": "npm run test:base -- --coverage",
+    "test:watch": "npm run test:base -- --watch",
+    "test": "npm run test:base"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@jest/globals": "^29.7.0",
+    "@semantic-release/git": "^10.0.1",
+    "@stylistic/eslint-plugin": "^4.1.0",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.13.5",
+    "cross-env": "^7.0.3",
+    "eslint": "^9.21.0",
+    "eslint-config-prettier": "^10.0.2",
+    "globals": "^16.0.0",
+    "jest": "^29.7.0",
+    "prettier": "3.5.2",
+    "rimraf": "^6.0.1",
+    "semantic-release": "^24.2.3",
+    "ts-jest": "^29.2.6",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.25.0"
+  }
+}
