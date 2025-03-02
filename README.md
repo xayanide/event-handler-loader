@@ -83,6 +83,7 @@ You can customize how event handlers are loaded using an options object:
 await loadEventHandlers("./path/to/eventHandlers", objectWithEventEmitterMethods, {
     // Default value: parallel
     // Options: "parallel" or "sequential"
+    // How the module imports event handlers
     importMode: "sequential",
     // Default value: default
     // Options: "default" or "named"
