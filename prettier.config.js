@@ -4,7 +4,7 @@
  */
 export default {
     /** Defaulted settings: */
-    parser: "babel",
+    parser: "typescript",
     trailingComma: "all",
     semi: true,
     singleQuote: false,
