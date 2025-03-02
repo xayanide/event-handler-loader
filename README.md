@@ -12,7 +12,7 @@ npm install event-handler-loader
 
 ### 1. Creating Event Handlers
 
-Each event handler should be a JavaScript / TypeScript module with any file name that exports an object with the required properties: `name`, `isOnce`, `execute`.
+Each event handler should be a JavaScript/TypeScript module with any file name that exports an object with the required properties: `name`, `isOnce`, `execute`.
 
 With discord.js bot events as an example use case.
 
@@ -30,7 +30,6 @@ export default {
         console.log(`Ready! Logged in as ${readyClient.user.tag}`);
     },
 };
-
 ```
 
 You can also use named exports:
@@ -55,6 +54,7 @@ export const eventHandler = {
 ### 2. Loading Event Handlers
 
 With discord.js bot events as an example use case.
+
 ```ts
 // src/index
 import * as nodePath from "node:path";
@@ -75,7 +75,7 @@ try {
 }
 ```
 
-### Options
+### Optional Options
 
 You can customize how event handlers are loaded using an options object:
 
@@ -107,9 +107,15 @@ await loadEventHandlers("./path/to/eventHandlers", objectWithEventEmitterMethods
 });
 ```
 
+You can also choose to omit the options object to stick to the default configuration
+
+```js
+await loadEventHandlers("./path/to/eventHandlers", objectWithEventEmitterMethods);
+```
+
 ### 3. Handling Async Event Handlers
 
-If an event handler is an `async` function, it will be awaited automatically internally:
+This is also handled internally.
 
 ```js
 export default {
@@ -128,18 +134,20 @@ export default {
 If an event handler is missing required keys or receives invalid types and values with those keys, an error will be thrown appropriately.
 
 For example.
-`exportType: "default"` (`default` by default) will look for event handler modules with default exports.
+
+`exportType: "default"` (`default` by default) will look for event handler modules with default exports only.
 
 ```ts
 await loadEventHandlers("DirectoryToModulesWithNamedExports", eventEmitter, { exportType: "default", });
 ```
 
-However, if it encounters named exports when it's expecting default exports:
+However, when it encounters named exports when it's expecting default exports:
+
 ```sh
 Error: Invalid event handler module. Must be a default export.
 ```
 
-Make sure your event handlers follow the required structure.
+Make sure your event handlers follow the required and configured structure.
 
 ## Use Cases
 
