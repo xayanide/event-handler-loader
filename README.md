@@ -1,6 +1,22 @@
 # event-handler-loader
 
-A lightweight utility for dynamically loading event handlers from a directory and adding the event listeners to an instance that has EventEmitter methods.
+A simple and lightweight way load event handlers from a directory and attach them to any EventEmitter-like instance. It supports two ways of importing files, flexible event handler structures, and lets you customize how listeners are added.
+
+## Intro
+
+Working with events usually means manually setting up event handlers on an EventEmitter instance. It’s okhi for small projects, but as things grow, it can quickly become messy and repetitive.
+
+This utility simplifies things by automatically loading event handlers from a directory and attaching them to an EventEmitter-like instance—basically, any object with the same event-handling methods as Node.js’ EventEmitter. The tradeoff? It follows a somewhat fixed structure and might not mesh well with more OOP-heavy approaches.
+
+> [!NOTE]
+> An *"EventEmitter-like instance"* is any object that implements the same event-handling methods as Node.js's `EventEmitter`.
+> This means it must have the following methods:
+>
+> - `on(event, listener)`: Registers a listener for an event.
+> - `once(event, listener)`: Registers a listener that runs only once.
+> - `addListener(event, listener)`: Alias for `on()`.
+> - `prependListener(event, listener)`: Adds a listener before any existing ones.
+> - `prependOnceListener(event, listener)`: Like `once()`, but added to the front of the listener queue.
 
 ## Installation
 
