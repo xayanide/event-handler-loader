@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/xayanide/event-handler-loader.git"
+    "url": "git+https://github.com/xayanide/event-handler-loader.git"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
