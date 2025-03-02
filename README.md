@@ -8,17 +8,12 @@ A lightweight utility for dynamically loading event handlers from a directory an
 npm install event-handler-loader
 ```
 
-or
-
-```sh
-yarn add event-handler-loader
-```
-
 ## Usage
 
 ### 1. Creating Event Handlers
 
-Each event handler should be a module exporting an object with the required properties: name, isOnce, execute.
+Each event handler should be a module exporting an object with the required properties: `name`, `isOnce`, `execute`.
+
 With discord.js bot events as an example use case.
 
 ```ts
@@ -130,13 +125,15 @@ export default {
 
 ## Error Handling
 
-If an event handler is missing required keys or receives an invalid types and values, an error will be thrown:
+If an event handler is missing required keys or receives invalid types and values with those keys, an error will be thrown appropriately.
 
 For example.
 `exportType: "default"` (`default` by default) will look for event handler modules with default exports.
+
 ```ts
 await loadEventHandlers("DirectoryToModulesWithNamedExports", eventEmitter, { exportType: "default", });
 ```
+
 However, if it encounters named exports when it's expecting default exports:
 ```sh
 Error: Invalid event handler module. Must be a default export.
@@ -148,7 +145,7 @@ Make sure your event handlers follow the required structure.
 
 - **Discord Bots**: Load event handlers dynamically for events.
 - **Modular Applications**: Load user-defined events dynamically.
-- 
+
 ## The project's core tech stack
 - [TypeScript](https://www.typescriptlang.org) - Programming language, a superset of JavaScript
 - [JavaScript](https://en.wikipedia.org/wiki/JavaScript) - Programming language
