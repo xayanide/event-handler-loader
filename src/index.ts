@@ -36,7 +36,7 @@ async function isValidDirectory(dirPath: PathLike) {
 }
 
 function isAsyncFunction(fn: EventExecute) {
-    return fn.constructor.name === "AsyncFunction";
+    return fn && fn.constructor.name === "AsyncFunction";
 }
 
 function hasAddListenerMethods(object: EventEmitter): boolean {
@@ -52,15 +52,16 @@ function hasAddListenerMethods(object: EventEmitter): boolean {
 }
 
 /**
+The listenerPrependedArgs option serves as a way to prepend custom values to the arguments
+passed to the event handlers' execute() method when an event is emitted.
+isAsyncFunction check is used so that 'await' will not promisify normal functions.
+'class AsyncFunction {}' can break this, I think.
 I will not use arrow functions or anonymous functions for these.
 They'll remain named for verbosity and verbose error stack traces.
 Note: isAsyncFunction cannot detect if a regular non-async function is async if the regular non-async function returns a Promise.
+From what I've read, the only way to detect if a regular function returns a promise is to call it, which is not preferred in this case.
 */
 function getAsyncAwareListener(executeMethod: EventExecute, listenerPrependedArgs: unknown[]) {
-    /**
-    The listenerPrependedArgs option serves as a way to prepend custom values to the arguments
-    passed to the event handlers' execute() method when an event is emitted.
-    */
     if (isAsyncFunction(executeMethod)) {
         async function asyncListener(...listenerEmittedArgs: unknown[]) {
             const listenerArgs = listenerPrependedArgs.length > 0 ? [...listenerPrependedArgs, ...listenerEmittedArgs] : listenerEmittedArgs;
