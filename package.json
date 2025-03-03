@@ -1,22 +1,19 @@
 {
   "name": "event-handler-loader",
-  "type": "module",
   "version": "1.1.2",
   "description": "",
-  "author": {
-    "name": "xayanide"
-  },
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
-  "license": "GPL-3.0-only",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "./dist"
+  "keywords": [
+    "event",
+    "handler",
+    "loader",
+    "utility"
   ],
+  "bugs": {
+    "url": "https://github.com/xayanide/event-handler-loader/issues"
+  },
+  "repository": {
+    "url": "xayanide/event-handler-loader"
+  },
   "funding": [
     {
       "type": "paypal",
@@ -35,25 +32,37 @@
       "url": "https://github.com/sponsors/xayanide"
     }
   ],
-  "repository": {
-    "url": "xayanide/event-handler-loader"
+  "license": "GPL-3.0-only",
+  "author": {
+    "name": "xayanide"
   },
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "./dist"
+  ],
   "scripts": {
-    "start": "node dist/index.js",
-    "dev": "npm run build:base && npm run start",
-    "clean": "rimraf dist",
-    "lint": "eslint . --ignore-pattern '**/.config/'",
-    "lint:fix": "npm run lint -- --fix",
-    "format:base": "NODE_OPTIONS=\"--experimental-strip-types\" prettier .",
-    "format:write": "npm run format:base -- --write",
-    "format:check": "npm run format:base -- --check",
+    "build": "npm run clean && npm run build:base",
     "build:base": "tsc",
     "build:watch": "npm run build:base -- --watch",
-    "build": "npm run clean && npm run build:base",
+    "clean": "rimraf dist",
+    "dev": "npm run build:base && npm run start",
+    "format:base": "NODE_OPTIONS=\"--experimental-strip-types\" prettier .",
+    "format:check": "npm run format:base -- --check",
+    "format:write": "npm run format:base -- --write",
+    "lint": "eslint . --ignore-pattern '**/.config/'",
+    "lint:fix": "npm run lint -- --fix",
+    "start": "node dist/index.js",
+    "test": "npm run test:base",
     "test:base": "cross-env NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest --verbose --detectOpenHandles",
     "test:coverage": "npm run test:base -- --coverage",
-    "test:watch": "npm run test:base -- --watch",
-    "test": "npm run test:base"
+    "test:watch": "npm run test:base -- --watch"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
