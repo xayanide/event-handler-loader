@@ -92,7 +92,9 @@ export const handler = {
 };
 ```
 
-With `exportType: default`, it'll look for default exports exclusively, like so:
+An error will be thrown if you chose to have both modules in a directory with default exports and named exports because it doesn't align with the loader's configuration.
+
+With `exportType: default`, it'll look for default exports exclusively, so you'll have to rewrite it like so:
 
 ```ts
 // src/eventHandlers/process/default.ts
@@ -180,7 +182,7 @@ export const eventHandler = {
 };
 ```
 
-### Optional Options
+### Optional Configuration
 
 You can customize how event handlers are loaded using an options object:
 
@@ -192,7 +194,7 @@ await loadEventHandlers("./path/to/eventHandlers", objectWithEventEmitterMethods
     importMode: "sequential",
     // Default value: default
     // Options: "default" or "named"
-    // The type of export the module should look for.
+    // The type of export the module should look for in a directory. One export type per directory.
     exportType: "named",
     // Default value: eventHandler (Case-sensitive!)
     // Options: non-empty string or "*"
@@ -304,7 +306,7 @@ These are also handled internally.
 export default {
     name: "fetchData",
     isOnce: true,
-    async execute() {
+    execute: async function () {
         const response = await fetch("https://dog.ceo/api/breeds/image/random")
         const data = await response.json()
         console.log("Fetched data:", data);
