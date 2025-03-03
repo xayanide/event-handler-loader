@@ -214,3 +214,4 @@ async function loadEventHandlers(dirPath: string, eventEmitterLike: EventEmitter
 }
 
 export { loadEventHandlers };
+export default loadEventHandlers;
