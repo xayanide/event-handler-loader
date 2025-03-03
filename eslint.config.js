@@ -56,5 +56,21 @@ export default tseslint.config(
     https://eslint.org/docs/latest/use/configure/configuration-files#globally-ignoring-files-with-ignores
     https://github.com/eslint/eslint/discussions/18304#discussioncomment-9069706
     */
-    { ignores: ["**/node_modules/", "**/.git/", "**/logs/", "**/dist/", "**/sandbox/"] },
+    {
+        ignores: [
+            "**/*",
+            "!**/*.ts",
+            "!**/*.mts",
+            "!**/*.cts",
+            "!**/*.js",
+            "!**/*.cjs",
+            "!**/*.mjs",
+            "!**/*/",
+            "**/node_modules",
+            "**/.git",
+            "**/logs",
+            "**/dist",
+            "**/sandbox",
+        ],
+    },
 );

@@ -10,5 +10,5 @@ export default {
         useESM: true,
     }),
     coverageDirectory: "./coverage",
-    coveragePathIgnorePatterns: ["/node_modules/", "test/events/"],
+    coveragePathIgnorePatterns: ["node_modules", "test/events"],
 };

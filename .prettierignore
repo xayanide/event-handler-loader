@@ -11,3 +11,9 @@
 
 # Check subdirectories too
 !*/
+
+# Others
+**/node_modules
+**/.git
+**/logs
+**/sandbox
