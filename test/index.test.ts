@@ -13,6 +13,7 @@ const namedDir = nodePath.join(eventHandlers, "named");
 const isOnceDir = nodePath.join(eventHandlers, "isOnce");
 const emptyDir = nodePath.join(eventHandlers, "empty");
 const asyncDir = nodePath.join(eventHandlers, "async");
+const prependArgsDir = nodePath.join(eventHandlers, "prependArgs");
 const prependDir = nodePath.join(eventHandlers, "prepend");
 const nonModuleDir = nodePath.join(eventHandlers, "nonModule");
 const textFilePath = nodePath.join(eventHandlers, "event.txt");
@@ -22,6 +23,7 @@ describe("event-handler-loader", () => {
 
     beforeEach(() => {
         eventEmitter = new nodeEvents.EventEmitter();
+        jest.spyOn(console, "log").mockImplementation(() => undefined);
     });
 
     afterEach(async () => {
@@ -30,6 +32,19 @@ describe("event-handler-loader", () => {
     });
 
     describe("loadEventHandlers()", () => {
+        it("load, emit and pass listenerPrependedArgs and emitted event args correctly", async () => {
+            const listenerPrependedArgs = [1, "arg2", { arg3: 1 }];
+            await loadEventHandlers(prependArgsDir, eventEmitter, {
+                listenerPrependedArgs,
+            });
+            eventEmitter.emit("testEvent", "eventArg1", "eventArg2");
+            expect(console.log).toHaveBeenCalledWith("prependedArg1:", 1);
+            expect(console.log).toHaveBeenCalledWith("prependedArg2:", "arg2");
+            expect(console.log).toHaveBeenCalledWith("prependedArg3:", { arg3: 1 });
+            expect(console.log).toHaveBeenCalledWith("emittedArg1:", "eventArg1");
+            expect(console.log).toHaveBeenCalledWith("emittedarg2:", "eventArg2");
+        });
+
         it("load event handlers with parallel mode", async () => {
             await expect(loadEventHandlers(defaultDir, eventEmitter, { importMode: "parallel" })).resolves.toBeTruthy();
             expect(eventEmitter.listenerCount("unhandledRejection")).toBe(1);
