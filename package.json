@@ -3,14 +3,35 @@
   "type": "module",
   "version": "1.1.2",
   "description": "",
-  "author": "xayanide",
+  "author": {
+    "name": "xayanide"
+  },
   "license": "GPL-3.0-only",
   "main": "dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": ["./dist"],
   "exports": {
     "import": "./dist/index.js",
     "types": "./dist/index.d.ts"
   },
+  "funding": [
+    {
+      "type": "paypal",
+      "url": "https://www.paypal.com/paypalme/xayanide"
+    },
+    {
+      "type": "ko-fi",
+      "url": "https://ko-fi.com/xayanide"
+    },
+    {
+      "type": "buymeacoffee",
+      "url": "https://buymeacoffee.com/xayanide"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/xayanide"
+    }
+  ],
   "repository": {
     "url": "xayanide/event-handler-loader"
   },
