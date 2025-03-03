@@ -51,6 +51,10 @@ function hasAddListenerMethods(object: EventEmitter): boolean {
     return EVENT_EMITTER_ADD_LISTENER_METHOD_NAMES.every(hasMethod);
 }
 
+function getMergedListenerArgs(prependedArgs: unknown[], emittedArgs: unknown[]) {
+    return prependedArgs.length > 0 ? [...prependedArgs, ...emittedArgs] : emittedArgs;
+}
+
 /**
 The listenerPrependedArgs option serves as a way to prepend custom values to the arguments
 passed to the event handlers' execute() method when an event is emitted.
@@ -64,13 +68,13 @@ From what I've read, the only way to detect if a regular function returns a prom
 function getAsyncAwareListener(executeMethod: EventExecute, listenerPrependedArgs: unknown[]) {
     if (isAsyncFunction(executeMethod)) {
         async function asyncListener(...listenerEmittedArgs: unknown[]) {
-            const listenerArgs = listenerPrependedArgs.length > 0 ? [...listenerPrependedArgs, ...listenerEmittedArgs] : listenerEmittedArgs;
+            const listenerArgs = getMergedListenerArgs(listenerPrependedArgs, listenerEmittedArgs);
             return await executeMethod(...listenerArgs);
         }
         return asyncListener;
     } else {
         function syncListener(...listenerEmittedArgs: unknown[]) {
-            const listenerArgs = listenerPrependedArgs.length > 0 ? [...listenerPrependedArgs, ...listenerEmittedArgs] : listenerEmittedArgs;
+            const listenerArgs = getMergedListenerArgs(listenerPrependedArgs, listenerEmittedArgs);
             return executeMethod(...listenerArgs);
         }
         return syncListener;
