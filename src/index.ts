@@ -36,7 +36,7 @@ async function isValidDirectory(dirPath: PathLike) {
 }
 
 function isAsyncFunction(fn: EventExecute) {
-    const isFunction = fn && typeof fn === "function";
+    const isFunction = typeof fn === "function";
     if (isFunction) {
         return fn.constructor.name === "AsyncFunction";
     }
