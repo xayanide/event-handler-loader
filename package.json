@@ -13,7 +13,7 @@
     "url": "https://github.com/xayanide/event-handler-loader/issues"
   },
   "repository": {
-    "url": "xayanide/event-handler-loader"
+    "url": "git+https://github.com/xayanide/event-handler-loader.git"
   },
   "funding": [
     {
