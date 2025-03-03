@@ -92,8 +92,9 @@ export const handler = {
 };
 ```
 
-With `exportType: default`, it'll look for default exports exclusively, so you'll have to rewrite it like so:
 An error will be thrown if you chose to have both modules in a directory with default exports and named exports because it doesn't align with the loader's configuration.
+
+With `exportType: default`, it'll look for default exports exclusively, so you'll have to rewrite it like so:
 
 ```ts
 // src/eventHandlers/process/default.ts
