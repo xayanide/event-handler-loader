@@ -222,9 +222,83 @@ You can also choose to omit the options object entirely and stick to the default
 await loadEventHandlers("./path/to/eventHandlers", objectWithEventEmitterMethods);
 ```
 
+### Exporting Manually and Dynamically Created Event Handlers in One File
+
+```ts
+// src/index.ts
+import * as nodePath from "node:path";
+import * as nodeUrl from "node:url";
+import { loadEventHandlers } from "event-handler-loader";
+
+const eventHandlersFolder = nodePath.join(nodePath.dirname(nodeUrl.fileURLToPath(import.meta.url)), "eventHandlers");
+const processEvents = nodePath.join(eventHandlersFolder, "process");
+
+await loadEventHandlers(processEvents, process, {
+    exportType: "named",
+    importMode: "parallel",
+    // Import all named exports from all modules in a directory together with exportType: "named"
+    preferredNamedExport: "*",
+    listenerPrependedArgs: ["myString", { number: 1 }],
+});
+
+process.emit("uncaughtException", new Error("MyDeadlyError"));
+
+// src/eventHandlers/process/named.ts
+type EventHandler = {
+    name: string;
+    execute: (myString: string, object: {}, ...args: unknown[]) => void;
+};
+
+type EventHandlers = {
+    [eventName: string]: EventHandler;
+};
+
+// The exit event is manually defined and exported and named separately with a unique behavior: console.log("I am built different"), console.log("Event: 'exit'")
+export const exit = {
+    name: "exit",
+    execute: function (_myString: string, _object: {}, ...args: unknown[]) {
+        console.log("I am built different");
+        console.log("Event: 'exit'");
+        console.log("1st custom prepended parameter:", _myString);
+        console.log("2nd custom prepended parameter:", _object);
+        if (args.length) {
+            console.log("Emitted parameters:", ...args);
+        }
+    },
+};
+
+// Dynamically generating and exporting event handlers
+const processEventNames = ["SIGINT", "SIGUSR1", "SIGUSR2", "SIGTERM", "uncaughtException", "unhandledRejection"];
+
+function createProcessEventHandlers() {
+    return processEventNames.reduce(function (handlers: EventHandlers, eventName) {
+        handlers[eventName] = {
+            name: eventName,
+            // All callback listeners of "SIGINT", "SIGUSR1", "SIGUSR2", "SIGTERM", "uncaughtException", "unhandledRejection" except "exit" do the same thing:
+            execute: function (_myString: string, _object: {}, ...args: unknown[]) {
+                console.log("We all do the same thing")
+                console.log(`Event: '${eventName}'`);
+                console.log("1st custom prepended parameter:", _myString);
+                console.log("2nd custom prepended parameter:", _object);
+                if (args.length) {
+                    console.log("Emitted parameters:", ...args);
+                }
+            },
+        };
+        return handlers;
+    }, {});
+}
+
+// An object of process event handlers all with similar callback operations
+// Each have their own event name as key names, and they all do the same thing
+const eventHandlers = createProcessEventHandlers();
+// Destructure eventHandlers and export each named event handler as a named export.
+export const { SIGINT, SIGUSR1, SIGUSR2, SIGTERM, uncaughtException, unhandledRejection } = eventHandlers;
+```
+
 ### Handling Async Event Handlers
 
-These kind of handlers are also handled internally.
+These are also handled internally.
 
 ```js
 export default {
