@@ -113,7 +113,7 @@
     /* General preferences */
     // Let Typescript generate index.d.ts files
     "declaration": true,
-    "resolveJsonModule": false,
+    "resolveJsonModule": true,
     "sourceMap": true,
     "skipLibCheck": true,
     /* Type checking and linting preferences */
