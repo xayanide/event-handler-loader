@@ -168,11 +168,11 @@ You can also use named exports:
 import { Events } from "discord.js";
 import type { Client } from "discord.js";
 
-// The module will look for any export named 'eventHandler' (case-sensitive) by default. The preferred export name can be configured.
+// With exportType: named", the module will look for any export named 'eventHandler' (case-sensitive) by default. The preferred export name can be configured.
 export const eventHandler = {
     name: Events.ClientReady,
-    isOnce: false,
     // isOnce and isPrepend keys can be omitted. Only name, and execute keys are required.
+    isOnce: false,
     isPrepend: false,
     execute: function (readyClient: Client<true>) {
         console.log(`Ready! Logged in as ${readyClient.user.tag}`);
