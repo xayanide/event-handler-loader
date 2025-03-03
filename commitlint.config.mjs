@@ -1,12 +1,12 @@
-const Configuration = {
+export default {
     /*
      * Resolve and load @commitlint/config-conventional from node_modules.
      * Referenced packages must be installed
      */
     extends: ["@commitlint/config-conventional"],
     rules: {
-        'body-max-line-length': [0, "always", 100],
-        'footer-max-line-length': [0, "always", 100],
+        "body-max-line-length": [0, "always", 100],
+        "footer-max-line-length": [0, "always", 100],
     },
     /*
      * Array of functions that return true if commitlint should ignore the given message.
@@ -20,7 +20,11 @@ const Configuration = {
      * To see full list, check https://github.com/conventional-changelog/commitlint/blob/master/%40commitlint/is-ignored/src/defaults.ts.
      * To disable those ignores and run rules always, set `defaultIgnores: false` as shown below.
      */
-    ignores: [(commit) => commit === ""],
+    ignores: [
+        function (commit) {
+            return commit === "";
+        },
+    ],
     /*
      * Whether commitlint uses the default ignore rules, see the description above.
      */
@@ -124,5 +128,3 @@ const Configuration = {
         },
     },
 };
-
-export default Configuration;

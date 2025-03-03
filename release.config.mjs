@@ -5,7 +5,7 @@ export default {
     tagFormat: "${version}",
     branches: [
         { name: "main", prerelease: false },
-        { name: "dev", prerelease: true }
+        { name: "dev", prerelease: true },
     ],
     plugins: [
         ["@semantic-release/commit-analyzer"],

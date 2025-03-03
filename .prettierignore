@@ -3,7 +3,11 @@
 
 # But not these files
 !*.ts
+!*.mts
+!*.cts
 !*.js
+!*.cjs
+!*.mjs
 
 # Check subdirectories too
 !*/
