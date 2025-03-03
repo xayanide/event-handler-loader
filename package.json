@@ -8,6 +8,7 @@
     "loader",
     "utility"
   ],
+  "homepage": "https://github.com/xayanide/event-handler-loader",
   "bugs": {
     "url": "https://github.com/xayanide/event-handler-loader/issues"
   },
