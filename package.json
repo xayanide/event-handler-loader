@@ -58,6 +58,7 @@
     "format:write": "npm run format:base -- --write",
     "lint": "eslint . --ignore-pattern '**/.config/'",
     "lint:fix": "npm run lint -- --fix",
+    "prepare": "npm run build",
     "start": "node dist/index.js",
     "test": "npm run test:base",
     "test:base": "cross-env NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest --verbose --detectOpenHandles",
