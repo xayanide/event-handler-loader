@@ -5,7 +5,7 @@ interface EventHandlerModule {
 
 type EventName = string | symbol;
 
-type EventExecute = (...args: unknown[]) => void | Promise<void> | unknown | Promise<unknown>;
+type EventExecute = (...args: unknown[]) => unknown | Promise<unknown>;
 
 interface EventHandler {
     [key: string]: EventName | boolean | EventExecute | undefined;

@@ -41,7 +41,7 @@ function isAsyncFunction(fn: EventExecute) {
 
 function hasAddListenerMethods(object: EventEmitter): boolean {
     function hasMethod(methodName: string) {
-        const method = (object as unknown as { [key: string]: unknown })[methodName];
+        const method = (object as unknown as Record<string, unknown>)[methodName];
         if (!method || typeof method !== "function") {
             return false;
         }

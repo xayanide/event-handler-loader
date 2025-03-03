@@ -2,7 +2,7 @@ import globals from "globals";
 import eslintPluginJs from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
 import stylisticEslintPlugin from "@stylistic/eslint-plugin";
-import tseslint from "typescript-eslint";
+import tseslintPlugin from "typescript-eslint";
 
 const stylisticFormattingRules = {
     "@stylistic/no-trailing-spaces": ["error", { skipBlankLines: false, ignoreComments: true }],
@@ -11,7 +11,7 @@ const stylisticFormattingRules = {
     "@stylistic/comma-dangle": ["error", "always-multiline"],
     "@stylistic/comma-style": ["error", "last"],
     "@stylistic/no-floating-decimal": "error",
-    "@stylistic/quotes": ["error", "double", { allowTemplateLiterals: false }],
+    "@stylistic/quotes": ["off", "double", { allowTemplateLiterals: false }],
     "@stylistic/indent": ["error", 4, { SwitchCase: 1, tabLength: 4 }],
     "@stylistic/no-multiple-empty-lines": ["error", { max: 1, maxEOF: 0, maxBOF: 0 }],
     "@stylistic/multiline-comment-style": ["error", "bare-block"],
@@ -40,9 +40,10 @@ const eslintCodeQualityRules = {
  * @see https://eslint.org/docs/latest/use/configure
  * @type {import('eslint').Linter.Config[]}
  */
-export default tseslint.config(
+export default [
     eslintPluginJs.configs.recommended,
-    tseslint.configs.recommended,
+    ...tseslintPlugin.configs.strict,
+    ...tseslintPlugin.configs.stylistic,
     eslintConfigPrettier,
     {
         name: "xayanide/personal",
@@ -73,4 +74,4 @@ export default tseslint.config(
             "**/sandbox",
         ],
     },
-);
+];
