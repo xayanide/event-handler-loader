@@ -1,9 +1,12 @@
 name: BranchSyncer
 on:
   workflow_run:
-    workflows: [VersionReleaser]
-    types: [completed]
-    branches: [main]
+    workflows:
+      - Releaser
+    types:
+      - completed
+    branches:
+      - main
 
 permissions:
   contents: write

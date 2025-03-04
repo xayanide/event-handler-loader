@@ -1,9 +1,12 @@
 name: Linters
 on:
   push:
-    branches: [main, dev]
+    branches:
+      - main
+      - dev
   pull_request:
-    branches: [dev]
+    branches:
+      - dev
 
 jobs:
   lint-commit:
@@ -18,7 +21,7 @@ jobs:
       - name: Lint commit
         uses: wagoid/commitlint-github-action@v6
         with:
-          configFile: './commitlint.config.mjs'
+          configFile: ./commitlint.config.mjs
   lint-code:
     name: Lint code
     runs-on: ubuntu-latest

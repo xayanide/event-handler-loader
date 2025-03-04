@@ -26,6 +26,6 @@ jobs:
           token: ${{ secrets.SRGH_TOKEN }}
           merge-method: squash
           squash-commit-title: ${pull_request.title} (#${pull_request.number})
-          do-not-merge-labels: 'hold'
-          required-labels: 'approved'
+          do-not-merge-labels: hold
+          required-labels: approved
           pull-request: ${{ github.event.inputs.pull-request }}

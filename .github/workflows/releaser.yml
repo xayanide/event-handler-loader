@@ -1,16 +1,18 @@
 # https://semantic-release.gitbook.io/semantic-release/recipes/ci-configurations/github-actions
-name: VersionReleaser
+name: Releaser
 on:
   push:
-    branches: [main, dev]
+    branches:
+      - main
+      - dev
 
 permissions:
   # for checkout
   contents: read
 
 jobs:
-  release-version:
-    name: Bump and release if needed
+  release:
+    name: Bump version and release if needed
     runs-on: ubuntu-latest
     permissions:
       # to be able to publish a GitHub release
@@ -31,14 +33,14 @@ jobs:
       - name: Setup Node.js LTS
         uses: actions/setup-node@v4
         with:
-          node-version: "lts/*"
+          node-version: lts/*
       - name: Clean install NPM dependencies
         # npm ci (clean-install) removes the existing node_modules directory
         run: npm ci
       - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
         run: npm audit signatures
-      - name: Bump and release if needed
+      - name: Bump version and release if needed
         env:
-          GITHUB_TOKEN: ${{ secrets.SRGH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
