@@ -3,7 +3,6 @@ import * as nodePath from "node:path";
 import * as nodeUrl from "node:url";
 import { jest, describe, beforeEach, afterEach, it, expect } from "@jest/globals";
 import { loadEventHandlers } from "../src/index";
-import type { EventEmitter } from "node:events";
 
 const eventHandlers = nodePath.join(nodePath.dirname(nodeUrl.fileURLToPath(import.meta.url)), "events");
 const invalidKeysDir = nodePath.join(eventHandlers, "invalidKeys");
@@ -19,14 +18,16 @@ const nonModuleDir = nodePath.join(eventHandlers, "nonModule");
 const textFilePath = nodePath.join(eventHandlers, "event.txt");
 
 describe("event-handler-loader", () => {
-    let eventEmitter: EventEmitter;
+    let eventEmitter;
 
     beforeEach(() => {
         eventEmitter = new nodeEvents.EventEmitter();
-        jest.spyOn(console, "log").mockImplementation(() => undefined);
+        jest.spyOn(console, "log").mockImplementation(() => {
+            return undefined;
+        });
     });
 
-    afterEach(async () => {
+    afterEach(() => {
         jest.clearAllMocks();
         eventEmitter.removeAllListeners();
     });
@@ -119,7 +120,7 @@ describe("event-handler-loader", () => {
         });
 
         it("handle non-EventEmitter instances", async () => {
-            await expect(loadEventHandlers(namedDir, true as unknown as EventEmitter)).rejects.toThrow();
+            await expect(loadEventHandlers(namedDir, true)).rejects.toThrow();
         });
 
         it("handle importing named exports with exportType default", async () => {
@@ -131,12 +132,12 @@ describe("event-handler-loader", () => {
         });
 
         it("handle empty strings and non-string loadEventHandlers options", async () => {
-            await expect(loadEventHandlers(defaultDir, eventEmitter, { importMode: "" as unknown as "parallel" | "sequential" })).rejects.toThrow();
-            await expect(loadEventHandlers(defaultDir, eventEmitter, { exportType: "" as "default" | "named" })).rejects.toThrow();
-            await expect(loadEventHandlers(defaultDir, eventEmitter, { preferredNamedExport: "" as string })).rejects.toThrow();
-            await expect(loadEventHandlers(defaultDir, eventEmitter, { importMode: 1 as unknown as "parallel" | "sequential" })).rejects.toThrow();
-            await expect(loadEventHandlers(defaultDir, eventEmitter, { exportType: 1 as unknown as "default" | "named" })).rejects.toThrow();
-            await expect(loadEventHandlers(defaultDir, eventEmitter, { preferredNamedExport: 1 as unknown as string })).rejects.toThrow();
+            await expect(loadEventHandlers(defaultDir, eventEmitter, { importMode: "" })).rejects.toThrow();
+            await expect(loadEventHandlers(defaultDir, eventEmitter, { exportType: "" })).rejects.toThrow();
+            await expect(loadEventHandlers(defaultDir, eventEmitter, { preferredNamedExport: "" })).rejects.toThrow();
+            await expect(loadEventHandlers(defaultDir, eventEmitter, { importMode: 1 })).rejects.toThrow();
+            await expect(loadEventHandlers(defaultDir, eventEmitter, { exportType: 1 })).rejects.toThrow();
+            await expect(loadEventHandlers(defaultDir, eventEmitter, { preferredNamedExport: 1 })).rejects.toThrow();
         });
 
         it("handle empty strings non-string preferredEventHandlerKeys options", async () => {
@@ -154,22 +155,22 @@ describe("event-handler-loader", () => {
             ).rejects.toThrow();
             await expect(
                 loadEventHandlers(defaultDir, eventEmitter, {
-                    preferredEventHandlerKeys: { name: 1 as unknown as string, isOnce: "isOnce", isPrepend: "isPrepend", execute: "execute" },
+                    preferredEventHandlerKeys: { name: 1, isOnce: "isOnce", isPrepend: "isPrepend", execute: "execute" },
                 }),
             ).rejects.toThrow();
             await expect(
                 loadEventHandlers(defaultDir, eventEmitter, {
-                    preferredEventHandlerKeys: { name: "name", isOnce: 1 as unknown as string, isPrepend: "isPrepend", execute: "execute" },
+                    preferredEventHandlerKeys: { name: "name", isOnce: 1, isPrepend: "isPrepend", execute: "execute" },
                 }),
             ).rejects.toThrow();
             await expect(
                 loadEventHandlers(defaultDir, eventEmitter, {
-                    preferredEventHandlerKeys: { name: "name", isOnce: "isOnce", isPrepend: 1 as unknown as string, execute: "execute" },
+                    preferredEventHandlerKeys: { name: "name", isOnce: "isOnce", isPrepend: 1, execute: "execute" },
                 }),
             ).rejects.toThrow();
             await expect(
                 loadEventHandlers(defaultDir, eventEmitter, {
-                    preferredEventHandlerKeys: { name: "name", isOnce: "isOnce", isPrepend: "isPrepend", execute: 1 as unknown as string },
+                    preferredEventHandlerKeys: { name: "name", isOnce: "isOnce", isPrepend: "isPrepend", execute: 1 },
                 }),
             ).rejects.toThrow();
         });
