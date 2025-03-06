@@ -94,11 +94,6 @@ export default [
     /** Global config object that only applies to Test files and can be overriden */
     {
         name: "personal/test",
-        languageOptions: {
-            globals: {
-                ...globals.jest,
-            },
-        },
         files: ["**/*.spec.*", "**/*.test.*"],
         rules: {
             "no-shadow": "off",
