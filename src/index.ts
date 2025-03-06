@@ -18,10 +18,10 @@ const DEFAULT_EXPORT_TYPE = "default";
 const DEFAULT_NAMED_EXPORT = "eventHandler";
 const DEFAULT_IMPORT_MODES = ["parallel", "sequential"];
 const DEFAULT_EXPORT_TYPES = ["default", "named"];
-const DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS = {
+const DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS: LoadEventHandlersOptions = {
     importMode: DEFAULT_IMPORT_MODE,
     exportType: DEFAULT_EXPORT_TYPE,
-    listenerPrependedArgs: [] as unknown[],
+    listenerPrependedArgs: [],
     preferredNamedExport: DEFAULT_NAMED_EXPORT,
     preferredEventHandlerKeys: {},
 };
@@ -206,9 +206,9 @@ async function loadEventHandlers(dirPath: string, eventEmitterLike: EventEmitter
         }
         const filePath = nodePath.join(dirPath, file);
         const fileUrlHref = nodeUrl.pathToFileURL(filePath).href;
-        const eventExports = await importEventHandler(fileUrlHref, exportType, preferredNamedExport);
+        const eventExports = await importEventHandler(fileUrlHref, exportType as string, preferredNamedExport as string);
         for (const eventHandler of eventExports) {
-            bindEventListener(eventEmitterLike, eventHandler, preferredEventHandlerKeys, listenerPrependedArgs, fileUrlHref);
+            bindEventListener(eventEmitterLike, eventHandler, preferredEventHandlerKeys, listenerPrependedArgs as unknown[], fileUrlHref);
         }
     }
     if (importMode === "parallel") {
