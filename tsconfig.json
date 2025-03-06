@@ -32,7 +32,8 @@
     */
     "esModuleInterop": true,
     /* Library specific options */
-    "types": ["jest"],
+    // Omit types to include all visible @types packages
+    // "types": ["node"],
     /*
     Most of the time there is no need to configure rootDir or baseUrl.
     However, if the module in /src imports something outside /src,
