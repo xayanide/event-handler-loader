@@ -21,7 +21,7 @@ const DEFAULT_EXPORT_TYPES = ["default", "named"];
 const DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS = {
     importMode: DEFAULT_IMPORT_MODE,
     exportType: DEFAULT_EXPORT_TYPE,
-    listenerPrependedArgs: [],
+    listenerPrependedArgs: [] as unknown[],
     preferredNamedExport: DEFAULT_NAMED_EXPORT,
     preferredEventHandlerKeys: {},
 };
@@ -84,7 +84,7 @@ function getAsyncAwareListener(executeMethod: EventExecute, listenerPrependedArg
     }
 }
 
-function addEventListener(
+function bindEventListener(
     eventEmitterLike: EventEmitter,
     eventHandler: EventHandler,
     preferredEventHandlerKeys: EventHandlerKeys,
@@ -98,7 +98,7 @@ function addEventListener(
     if ((executeKeyName as "execute") in eventHandler === false) {
         throw new Error(`Unable to find an exported property '${executeKeyName}'. Module: ${fileUrlHref}`);
     }
-    const nameValue = eventHandler[nameKeyName as "name"];
+    const nameValue = String(eventHandler[nameKeyName as "name"]);
     const isOnceValue = eventHandler[isOnceKeyName as "isOnce"];
     const isPrependValue = eventHandler[isPrependKeyName as "isPrepend"];
     const executeMethod = eventHandler[executeKeyName as "execute"];
@@ -134,15 +134,15 @@ async function importEventHandler(fileUrlHref: string, exportType: string, prefe
     const isNamedExportType = exportType === "named";
     const importedModule: EventHandlerModule = await import(fileUrlHref);
     if (isNamedExportType && preferredNamedExport === "*") {
-        const exports: EventHandler[] = [];
+        const eventExports: EventHandler[] = [];
         for (const exportName in importedModule) {
             const eventHandler = importedModule[exportName];
             if (!eventHandler || !Object.prototype.hasOwnProperty.call(importedModule, exportName) || exportName === DEFAULT_EXPORT_NAME) {
                 throw new Error(`Invalid event handler module. Must be a named export. Unable to verify named export '${exportName}'. Module: ${fileUrlHref}`);
             }
-            exports.push(eventHandler);
+            eventExports.push(eventHandler);
         }
-        return exports;
+        return eventExports;
     } else {
         const exportName = isNamedExportType ? preferredNamedExport : DEFAULT_EXPORT_NAME;
         const eventHandler = importedModule[exportName];
@@ -206,9 +206,9 @@ async function loadEventHandlers(dirPath: string, eventEmitterLike: EventEmitter
         }
         const filePath = nodePath.join(dirPath, file);
         const fileUrlHref = nodeUrl.pathToFileURL(filePath).href;
-        const exports = await importEventHandler(fileUrlHref, exportType, preferredNamedExport);
-        for (const eventHandler of exports) {
-            addEventListener(eventEmitterLike, eventHandler, preferredEventHandlerKeys, listenerPrependedArgs, fileUrlHref);
+        const eventExports = await importEventHandler(fileUrlHref, exportType, preferredNamedExport);
+        for (const eventHandler of eventExports) {
+            bindEventListener(eventEmitterLike, eventHandler, preferredEventHandlerKeys, listenerPrependedArgs, fileUrlHref);
         }
     }
     if (importMode === "parallel") {
