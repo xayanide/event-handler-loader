@@ -31,6 +31,10 @@
     {
       "type": "github",
       "url": "https://github.com/sponsors/xayanide"
+    },
+    {
+      "type": "patreon",
+      "url": "https://patreon.com/xayanide"
     }
   ],
   "license": "GPL-3.0-only",
@@ -44,6 +48,7 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "main": "./dist/index.js",
   "files": [
     "./dist"
   ],
@@ -53,15 +58,15 @@
     "build:watch": "npm run build:base -- --watch",
     "clean": "rimraf dist",
     "dev": "npm run build:base && npm run start",
-    "format:base": "NODE_OPTIONS=\"--experimental-strip-types\" prettier .",
+    "format:base": "cross-env NODE_OPTIONS=\"--experimental-strip-types\" prettier .",
     "format:check": "npm run format:base -- --check",
     "format:write": "npm run format:base -- --write",
-    "lint": "eslint . --ignore-pattern '**/.config/'",
+    "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "prepare": "npm run build",
     "start": "node dist/index.js",
     "test": "npm run test:base",
-    "test:base": "cross-env NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest --verbose --detectOpenHandles",
+    "test:base": "cross-env NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest",
     "test:coverage": "npm run test:base -- --coverage",
     "test:watch": "npm run test:base -- --watch"
   },

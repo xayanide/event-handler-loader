@@ -1,17 +1,6 @@
 {
-    "parser": "babel",
     "printWidth": 172,
     "tabWidth": 4,
     "quoteProps": "consistent",
-    "overrides": [
-        {
-            "files": "*.ts",
-            "options": {
-                "parser": "typescript",
-                "printWidth": 172,
-                "tabWidth": 4,
-                "quoteProps": "consistent"
-            }
-        }
-    ]
+    "trailingComma": "all"
 }
