@@ -1,5 +1,10 @@
+# https://github.com/reitermarkus/automerge?tab=readme-ov-file#example-workflow
 name: PRAutoMerger
 on:
+  # Try enabling auto-merge for a pull request when a draft is marked as
+  # “ready for review”, when a required label is applied or when a
+  # “do not merge” label is removed, or when a pull request is updated in
+  # any way (opened, synchronized, reopened, edited)
   pull_request_target:
     types:
       - opened
@@ -9,10 +14,15 @@ on:
       - labeled
       - unlabeled
       - ready_for_review
+  # Try enabling auto-merge for the specified pull request,
+  # review or all open pull requests if none is specified.
   workflow_dispatch:
     inputs:
       pull-request:
-        description: Choose a pull request number
+        description: Pull Request Number
+        required: false
+      review:
+        description: Review ID
         required: false
 
 jobs:
@@ -23,9 +33,10 @@ jobs:
       - name: Enable auto-merge if PR is ready
         uses: reitermarkus/automerge@v2
         with:
-          token: ${{ secrets.SRGH_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           merge-method: squash
           squash-commit-title: ${pull_request.title} (#${pull_request.number})
-          do-not-merge-labels: hold
-          required-labels: approved
+          do-not-merge-labels: question,invalid,help wanted,wontfix
           pull-request: ${{ github.event.inputs.pull-request }}
+          review: ${{ github.event.inputs.review }}
+          dry-run: false

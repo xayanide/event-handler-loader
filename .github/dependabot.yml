@@ -4,24 +4,22 @@
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 version: 2
 updates:
-# Manage npm dependencies (package.json, package-lock.json)
-- package-ecosystem: npm
-  directory: "/"
-  schedule:
-    interval: daily
-  open-pull-requests-limit: 10
-  target-branch: dev
-  versioning-strategy: increase
-  labels:
-  - "enhancement"
-  - "approved"
-# Manage GitHub Actions dependencies (used in .github/workflows/*.yml)
-- package-ecosystem: github-actions
-  directory: "/"
-  schedule:
-    interval: daily
-  open-pull-requests-limit: 10
-  target-branch: dev
-  labels:
-  - "enhancement"
-  - "approved"
+  # Manage npm dependencies (package.json, package-lock.json)
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    target-branch: dev
+    versioning-strategy: increase
+    labels:
+      - enhancement
+  # Manage GitHub Actions dependencies (used in .github/workflows/*.yml)
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    target-branch: dev
+    labels:
+      - enhancement

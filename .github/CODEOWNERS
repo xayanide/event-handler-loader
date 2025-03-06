@@ -66,4 +66,4 @@
 # directory in the root of your repository except for the `/apps/github`
 # subdirectory, as this subdirectory has its own owner @doctocat
 # /apps/ @octocat
-#/apps/github @doctocat
+# /apps/github @doctocat

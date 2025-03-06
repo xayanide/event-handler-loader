@@ -11,8 +11,8 @@ permissions:
 
 jobs:
   approve-pr:
-    name: Approve dependabot PR for non-major updates only
-    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'xayanide/event-handler-loader'
+    name: Approve dependabot for non-major updates only
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Fetch dependabot metadata
@@ -20,8 +20,8 @@ jobs:
         uses: dependabot/fetch-metadata@v2
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Approve PR for non-major updates only
-        if: steps.dependabot-metadata.outputs.update-type != 'version-update:semver-major'
+      - name: Approve dependabot for non-major updates only
+        if: steps.dependabot-metadata.outputs.dependabot == 'true' && steps.dependabot-metadata.outputs.update-type != 'version-update:semver-major'
         run: |
           gh pr checkout "$PR_URL"
           if [ "$(gh pr status --json reviewDecision -q .currentBranch.reviewDecision)" != "APPROVED" ];

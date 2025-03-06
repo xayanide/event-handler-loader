@@ -11,9 +11,13 @@ on:
 permissions:
   contents: write
 
+env:
+  SOURCE_BRANCH: main
+  TARGET_BRANCH: dev
+
 jobs:
   sync-branch:
-    name: Sync branch 'dev' with 'main'
+    name: Sync branch source into target
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
@@ -22,11 +26,15 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.SRGH_TOKEN }}
-      - name: Sync branch 'dev' with 'main'
+      - name: Configure git user
         run: |
-          git checkout main
-          git fetch origin
-          git checkout dev
-          git pull --rebase
-          git merge origin/main
-          git push origin dev
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Sync branch source into target
+        run: |
+          set -e
+          git fetch origin ${{ env.SOURCE_BRANCH }} ${{ env.TARGET_BRANCH }}
+          git checkout ${{ env.TARGET_BRANCH }}
+          git fetch origin ${{ env.TARGET_BRANCH }}
+          git merge origin/${{ env.SOURCE_BRANCH }} || (echo "Merge conflict detected" && exit 1)
+          git push origin ${{ env.TARGET_BRANCH }}
