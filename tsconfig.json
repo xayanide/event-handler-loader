@@ -49,6 +49,7 @@
   ],
   "exclude": [
     "**/*.{spec,test}.{ts,js,mjs,cjs}",
+    "__tests__",
     "dist"
   ]
 }
