@@ -4,11 +4,9 @@ import { createDefaultEsmPreset } from "ts-jest";
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 export default {
     displayName: "event-handler-loader",
-    testMatch: ["**/test/**/*.test.ts"],
     ...createDefaultEsmPreset({
         tsconfig: "./tsconfig.json",
         useESM: true,
     }),
     coverageDirectory: "./coverage",
-    coveragePathIgnorePatterns: ["node_modules", "test/events"],
 };
