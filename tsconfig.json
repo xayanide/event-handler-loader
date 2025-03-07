@@ -48,8 +48,8 @@
     "src/**/*",
   ],
   "exclude": [
-    "**/*.{spec,test}.{ts,js,mjs,cjs}",
-    "**/__tests__/**",
+    "**/*.test.*",
+    "**/*.spec.*",
     "dist"
   ]
 }
