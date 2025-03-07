@@ -1,5 +1,7 @@
 {
-  "extends": ["@tsconfig/strictest/tsconfig.json"],
+  "extends": [
+    "@tsconfig/strictest/tsconfig.json"
+  ],
   "compilerOptions": {
     /* Module target preferences */
     "module": "NodeNext",
@@ -50,6 +52,7 @@
   "exclude": [
     "**/*.test.*",
     "**/*.spec.*",
+    "**/__tests__/**",
     "dist"
   ]
 }
