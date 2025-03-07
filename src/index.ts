@@ -64,7 +64,7 @@ The listenerPrependedArgs option serves as a way to prepend custom values to the
 passed to the event handlers' execute() method when an event is emitted.
 isAsyncFunction check is used so that 'await' will not promisify normal functions.
 I will not use arrow functions or anonymous functions for these.
-They'll remain named for verbosity and verbose error stack traces.
+The function declarations remain named for verbosity and verbose error stack traces.
 Note: isAsyncFunction cannot detect if a regular non-async function is async if the regular non-async function returns a Promise.
 From what I've read, the only way to detect if a regular function returns a promise is to call it, which is not preferred in this case.
 */
