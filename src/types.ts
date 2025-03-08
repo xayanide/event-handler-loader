@@ -1,19 +1,19 @@
-interface EventHandlerModule {
-    [key: string]: EventHandler | undefined;
-    default?: EventHandler;
+interface EventHandlerModuleNamespace {
+    default?: EventHandlerModuleExport;
+    [key: string]: EventHandlerModuleExport | undefined;
 }
 
-type EventName = string | symbol;
-
-type EventExecute = (...args: unknown[]) => unknown | Promise<unknown>;
-
-interface EventHandler {
+interface EventHandlerModuleExport {
     [key: string]: EventName | boolean | EventExecute | undefined;
     name?: EventName;
     isOnce?: boolean;
     isPrepend?: boolean;
     execute?: EventExecute;
 }
+
+type EventName = string | symbol;
+
+type EventExecute = (...args: unknown[]) => unknown | Promise<unknown>;
 
 interface EventHandlerKeys {
     name?: string | "name";
@@ -36,4 +36,4 @@ interface LoadEventHandlersOptions {
     preferredEventHandlerKeys?: EventHandlerKeys;
 }
 
-export type { NamedExports, EventName, EventExecute, EventHandler, EventHandlerModule, LoadEventHandlersOptions, EventHandlerKeys };
+export type { EventExecute, EventHandlerKeys, EventHandlerModuleExport, EventHandlerModuleNamespace, EventName, ImportModes, LoadEventHandlersOptions, NamedExports };
