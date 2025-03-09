@@ -16,7 +16,6 @@ but that can trigger a no-shadow error for ESLint, so that rule is disabled for 
 export default {
     verbose: true,
     detectOpenHandles: true,
-    displayName: "event-handler-loader",
     testMatch: ["**/*.test.@(ts|js)"],
     /**
     moduleNameMapper is for errors related to:
@@ -31,5 +30,5 @@ export default {
         useESM: true,
     }),
     coverageDirectory: "./coverage",
-    testPathIgnorePatterns: ["node_modules", "dist"],
+    testPathIgnorePatterns: ["/node_modules/", "/dist/"],
 };
