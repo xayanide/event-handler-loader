@@ -156,6 +156,10 @@ describe("event-handler-loader", () => {
             await expect(loadEventHandlers(namedDir, eventEmitter)).rejects.toThrow();
         });
 
+        it("handle importing named exports with exportType named and preferredNamedExport default", async () => {
+            await expect(loadEventHandlers(namedDir, eventEmitter, { exportType: "named", preferredNamedExport: "default" })).rejects.toThrow();
+        });
+
         it("handle importing default exports with exportType named", async () => {
             await expect(loadEventHandlers(defaultDir, eventEmitter, { exportType: "named" })).rejects.toThrow();
         });
