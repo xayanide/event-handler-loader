@@ -66,7 +66,7 @@ function getMergedListenerArgs(prependedArgs: unknown[], emittedArgs: unknown[])
 
 async function getModules(
     dirPath: string,
-    isRecurive = false,
+    isRecurive: boolean,
     filterCallback = function (fileName: string) {
         return fileName.endsWith(".js") || fileName.endsWith(".ts") || fileName.endsWith(".cjs") || fileName.endsWith(".mjs");
     },
