@@ -36,7 +36,7 @@ With Node.js' `process` as the simplest example to demonstrate how it can be use
 
 > [!WARNING]
 > This is for demonstration purposes only.
-> However, if you do plan to use them like this, be sure to properly exit the process when listening to critical process event listeners such as `unhandledRejection` and `uncaughtException` where your process is supposed to shut down as soon as possible, otherwise your process can end up in a loop when an error occurs inside the listeners' callbacks (stuff that the listeners invoke).
+> However, if you do plan to use them like this, be sure to properly exit the process when listening to critical process event listeners such as `unhandledRejection` and `uncaughtException` where your process is supposed to shut down as soon as possible, otherwise your process can end up in a loop when an error occurs inside the listeners' callbacks because the errors can keep triggering the same event and listener callback indefinitely.
 
 #### Loading Event Handlers
 
