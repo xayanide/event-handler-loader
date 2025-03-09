@@ -71,32 +71,28 @@ async function getModules(
         return fileName.endsWith(".js") || fileName.endsWith(".ts") || fileName.endsWith(".cjs") || fileName.endsWith(".mjs");
     },
 ) {
-    try {
-        const entries = await nodeFsPromises.readdir(dirPath, { withFileTypes: true });
-        const files = entries.filter(function (entry) {
-            return entry.isFile();
-        });
-        const fileNames = files.map(function (file) {
-            return file.name;
-        });
-        let filteredFileNames = fileNames.filter(filterCallback);
-        if (isRecurive) {
-            for (const entry of entries) {
-                if (!entry.isDirectory()) {
-                    continue;
-                }
-                const subDirFiles = await getModules(nodePath.join(dirPath, entry.name), true, filterCallback);
-                filteredFileNames = filteredFileNames.concat(
-                    subDirFiles.map(function (file) {
-                        return nodePath.join(entry.name, file);
-                    }),
-                );
+    const entries = await nodeFsPromises.readdir(dirPath, { withFileTypes: true });
+    const files = entries.filter(function (entry) {
+        return entry.isFile();
+    });
+    const fileNames = files.map(function (file) {
+        return file.name;
+    });
+    let filteredFileNames = fileNames.filter(filterCallback);
+    if (isRecurive) {
+        for (const entry of entries) {
+            if (!entry.isDirectory()) {
+                continue;
             }
+            const subDirFiles = await getModules(nodePath.join(dirPath, entry.name), true, filterCallback);
+            filteredFileNames = filteredFileNames.concat(
+                subDirFiles.map(function (file) {
+                    return nodePath.join(entry.name, file);
+                }),
+            );
         }
-        return filteredFileNames;
-    } catch {
-        return [];
     }
+    return filteredFileNames;
 }
 
 /**
@@ -138,7 +134,7 @@ function bindEventListener(
     if ((executeKeyName as "execute") in moduleExport === false) {
         throw new Error(`Unable to find an exported property '${executeKeyName}'. Module: ${fileUrlHref}`);
     }
-    const nameValue = String(moduleExport[nameKeyName as "name"]);
+    const nameValue = moduleExport[nameKeyName as "name"];
     const isOnceValue = moduleExport[isOnceKeyName as "isOnce"];
     const isPrependValue = moduleExport[isPrependKeyName as "isPrepend"];
     const executeMethod = moduleExport[executeKeyName as "execute"];
@@ -242,6 +238,9 @@ async function loadEventHandlers(
     }
     if (!preferredNamedExport || typeof preferredNamedExport !== "string") {
         throw new Error(`Invalid preferred named export: ${preferredNamedExport}. Must be a non-empty string.`);
+    }
+    if (typeof isRecursive !== "boolean") {
+        throw new Error(`Invalid isRecursive: ${isRecursive}. Must be a boolean.`);
     }
     const eventHandlerFiles = await getModules(dirPath, isRecursive);
     if (eventHandlerFiles.length === 0) {
