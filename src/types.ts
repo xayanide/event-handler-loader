@@ -1,4 +1,4 @@
-import type { EventEmitter } from "node:stream";
+import type { EventEmitter } from "node:events";
 
 interface EventHandlerModuleNamespace {
     default?: EventHandlerModuleExport;
