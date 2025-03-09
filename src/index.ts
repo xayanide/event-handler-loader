@@ -138,8 +138,8 @@ function bindEventListener(
     const isOnceValue = moduleExport[isOnceKeyName as "isOnce"];
     const isPrependValue = moduleExport[isPrependKeyName as "isPrepend"];
     const executeMethod = moduleExport[executeKeyName as "execute"];
-    if (!nameValue || (typeof nameValue !== "string" && typeof nameValue !== "symbol")) {
-        throw new Error(`Invalid value for key ${nameKeyName}: '${nameValue}'. Must be a non-empty string or symbol. Module: ${fileUrlHref}`);
+    if ((typeof nameValue !== "string" && typeof nameValue !== "symbol") || (nameValue as string).trim() === "") {
+        throw new Error(`Invalid value for key ${nameKeyName}: '${String(nameValue)}'. Must be a non-empty string or symbol. Module: ${fileUrlHref}`);
     }
     if (isOnceValue && typeof isOnceValue !== "boolean") {
         throw new Error(`Invalid value for key ${isOnceKeyName}: '${isOnceValue}'. Must be a boolean. Module: ${fileUrlHref}`);
@@ -218,16 +218,16 @@ async function loadEventHandlers(
     const preferredEventHandlerKeys = { ...DEFAULT_EVENT_HANDLER_KEY_NAMES, ...eventHandlerOptions.preferredEventHandlerKeys };
     const { name: nameKeyName, isOnce: isOnceKeyName, isPrepend: isPrependKeyName, execute: executeKeyName } = preferredEventHandlerKeys;
     /** Use 'not' operator to not omit undefined and empty strings passed in options */
-    if (!nameKeyName || typeof nameKeyName !== "string") {
+    if (typeof nameKeyName !== "string" || nameKeyName.trim() === "") {
         throw new Error(`Invalid value for preferredEventHandlerKeys name: '${nameKeyName}'. Must be a non-empty string.`);
     }
-    if (!isOnceKeyName || typeof isOnceKeyName !== "string") {
+    if (typeof isOnceKeyName !== "string" || isOnceKeyName.trim() === "") {
         throw new Error(`Invalid value for preferredEventHandlerKeys isOnce: '${isOnceKeyName}'. Must be a non-empty string.`);
     }
-    if (!isPrependKeyName || typeof isPrependKeyName !== "string") {
+    if (typeof isPrependKeyName !== "string" || isPrependKeyName.trim() === "") {
         throw new Error(`Invalid value for preferredEventHandlerKeys isPrepend: '${isPrependKeyName}'. Must be a non-empty string.`);
     }
-    if (!executeKeyName || typeof executeKeyName !== "string") {
+    if (typeof executeKeyName !== "string" || executeKeyName.trim() === "") {
         throw new Error(`Invalid value for preferredEventHandlerKeys execute: '${executeKeyName}'. Must be a non-empty string.`);
     }
     if (!importMode || !DEFAULT_IMPORT_MODES.includes(importMode)) {
@@ -236,7 +236,7 @@ async function loadEventHandlers(
     if (!exportType || !DEFAULT_EXPORT_TYPES.includes(exportType)) {
         throw new Error(`Invalid export type: ${exportType}. Must be one of string: ${DEFAULT_EXPORT_TYPES.join(", ")}`);
     }
-    if (!preferredNamedExport || typeof preferredNamedExport !== "string") {
+    if (typeof preferredNamedExport !== "string" || preferredNamedExport.trim() === "") {
         throw new Error(`Invalid preferred named export: ${preferredNamedExport}. Must be a non-empty string.`);
     }
     if (typeof isRecursive !== "boolean") {
