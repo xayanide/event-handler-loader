@@ -248,7 +248,6 @@ async function loadEventHandlers(
     }
     async function loadEventHandler(file: string) {
         const filePath = nodePath.join(dirPath, file);
-        console.log(filePath);
         const fileUrlHref = nodeUrl.pathToFileURL(filePath).href;
         /**
          * Some type casts were necessary herebecause TypeScript
