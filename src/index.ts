@@ -3,7 +3,14 @@ import * as nodeUrl from "node:url";
 import * as nodeFsPromises from "node:fs/promises";
 import type { EventEmitter } from "node:events";
 import type { PathLike } from "node:fs";
-import type { EventExecute, EventHandlerModuleExport, EventHandlerModuleNamespace, EventHandlerKeys, LoadEventHandlersOptions } from "./types.js";
+import type {
+    EventExecute,
+    EventHandlerModuleExport,
+    EventHandlerModuleNamespace,
+    EventHandlerKeys,
+    LoadEventHandlersOptions,
+    BindEventListenerOverride,
+} from "./types.js";
 
 const DEFAULT_EXPORT_NAME = "default";
 const EVENT_EMITTER_ADD_LISTENER_METHOD_NAMES = ["on", "once", "addListener", "prependListener", "prependOnceListener"];
@@ -157,7 +164,12 @@ async function importModule(fileUrlHref: string, exportType: string, preferredEx
     }
 }
 
-async function loadEventHandlers(dirPath: string, eventEmitterLike: EventEmitter, options?: LoadEventHandlersOptions) {
+async function loadEventHandlers(
+    dirPath: string,
+    eventEmitterLike: EventEmitter,
+    options?: LoadEventHandlersOptions,
+    bindEventListenerOverride?: BindEventListenerOverride,
+) {
     const isValidDir = await isValidDirectory(dirPath);
     if (!isValidDir) {
         throw new Error(`Invalid event handler directory path: ${dirPath}. Must be an existent directory.`);
@@ -206,7 +218,15 @@ async function loadEventHandlers(dirPath: string, eventEmitterLike: EventEmitter
         const fileUrlHref = nodeUrl.pathToFileURL(filePath).href;
         const moduleExports = await importModule(fileUrlHref, exportType as string, preferredNamedExport as string);
         for (const moduleExport of moduleExports) {
-            bindEventListener(eventEmitterLike, moduleExport, preferredEventHandlerKeys, listenerPrependedArgs as unknown[], fileUrlHref);
+            if (typeof bindEventListenerOverride !== "function") {
+                bindEventListener(eventEmitterLike, moduleExport, preferredEventHandlerKeys, listenerPrependedArgs as unknown[], fileUrlHref);
+                continue;
+            }
+            if (isAsyncFunction(bindEventListenerOverride)) {
+                await bindEventListenerOverride(eventEmitterLike, moduleExport, fileUrlHref, listenerPrependedArgs as unknown[]);
+                continue;
+            }
+            bindEventListenerOverride(eventEmitterLike, moduleExport, fileUrlHref, listenerPrependedArgs as unknown[]);
         }
     }
     if (importMode === "concurrent") {

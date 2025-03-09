@@ -3,7 +3,7 @@ import * as nodePath from "node:path";
 import * as nodeUrl from "node:url";
 import { jest, describe, beforeEach, afterEach, it, expect } from "@jest/globals";
 import { loadEventHandlers } from "../index.js";
-import type { EventEmitter } from "node:events";
+import { EventEmitter } from "node:events";
 
 const eventHandlers = nodePath.join(nodePath.dirname(nodeUrl.fileURLToPath(import.meta.url)), "events");
 const invalidKeysDir = nodePath.join(eventHandlers, "invalidKeys");
@@ -55,6 +55,18 @@ describe("event-handler-loader", () => {
         it("load event handlers with sequential mode", async () => {
             await expect(loadEventHandlers(defaultDir, eventEmitter, { importMode: "sequential" })).resolves.toBeTruthy();
             expect(eventEmitter.listenerCount("unhandledRejection")).toBe(1);
+        });
+
+        it("load event handlers with sequential mode and overriden callback", async () => {
+            await expect(
+                loadEventHandlers(defaultDir, eventEmitter, { importMode: "sequential" }, function (emitter, moduleExport, fileUrlHref, listenerPrependedArgs) {
+                    expect(emitter).toBeInstanceOf(EventEmitter);
+                    expect(typeof moduleExport === "object").toBeTruthy();
+                    expect(typeof fileUrlHref === "string").toBeTruthy();
+                    expect(listenerPrependedArgs.length).toBe(0);
+                }),
+            ).resolves.toBeTruthy();
+            expect(eventEmitter.listenerCount("unhandledRejection")).toBe(0);
         });
 
         it("load and invoke event handlers with sync or async methods", async () => {

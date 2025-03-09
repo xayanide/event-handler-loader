@@ -1,3 +1,5 @@
+import type { EventEmitter } from "node:stream";
+
 interface EventHandlerModuleNamespace {
     default?: EventHandlerModuleExport;
     [key: string]: EventHandlerModuleExport | undefined;
@@ -34,6 +36,24 @@ interface LoadEventHandlersOptions {
     listenerPrependedArgs?: unknown[];
     preferredNamedExport?: NamedExports;
     preferredEventHandlerKeys?: EventHandlerKeys;
+    bindEventListenerOverride?: BindEventListenerOverride;
 }
 
-export type { EventExecute, EventHandlerKeys, EventHandlerModuleExport, EventHandlerModuleNamespace, EventName, ImportModes, LoadEventHandlersOptions, NamedExports };
+type BindEventListenerOverride = (
+    eventEmitterLike: EventEmitter,
+    moduleExport: EventHandlerModuleExport,
+    fileUrlHref: string,
+    listenerPrependedArgs: unknown[],
+) => unknown | Promise<unknown>;
+
+export type {
+    BindEventListenerOverride,
+    EventExecute,
+    EventHandlerKeys,
+    EventHandlerModuleExport,
+    EventHandlerModuleNamespace,
+    EventName,
+    ImportModes,
+    LoadEventHandlersOptions,
+    NamedExports,
+};
