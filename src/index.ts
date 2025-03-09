@@ -216,6 +216,11 @@ async function loadEventHandlers(
         }
         const filePath = nodePath.join(dirPath, file);
         const fileUrlHref = nodeUrl.pathToFileURL(filePath).href;
+        /**
+         * Some type casts were necessary herebecause TypeScript
+         * didn't consider the guard clauses outside this async function declaration
+         * - xaya
+         */
         const moduleExports = await importModule(fileUrlHref, exportType as string, preferredNamedExport as string);
         for (const moduleExport of moduleExports) {
             if (typeof bindEventListenerOverride !== "function") {
