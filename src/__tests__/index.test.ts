@@ -3,7 +3,7 @@ import * as nodePath from "node:path";
 import * as nodeUrl from "node:url";
 import { jest, describe, beforeEach, afterEach, it, expect } from "@jest/globals";
 import { loadEventHandlers } from "../index.js";
-import { EventEmitter } from "node:events";
+import type { EventEmitter } from "node:events";
 
 const eventHandlers = nodePath.join(nodePath.dirname(nodeUrl.fileURLToPath(import.meta.url)), "events");
 const invalidKeysDir = nodePath.join(eventHandlers, "invalidKeys");
@@ -60,7 +60,7 @@ describe("event-handler-loader", () => {
         it("load event handlers with sequential mode and overriden callback sync and async ", async () => {
             await expect(
                 loadEventHandlers(defaultDir, eventEmitter, { importMode: "sequential" }, function (emitter, moduleExport, fileUrlHref, listenerPrependedArgs) {
-                    expect(emitter).toBeInstanceOf(EventEmitter);
+                    expect(emitter).toBeInstanceOf(nodeEvents.EventEmitter);
                     expect(typeof moduleExport === "object").toBeTruthy();
                     expect(typeof fileUrlHref === "string").toBeTruthy();
                     expect(listenerPrependedArgs.length).toBe(0);
@@ -68,7 +68,7 @@ describe("event-handler-loader", () => {
             ).resolves.toBeTruthy();
             await expect(
                 loadEventHandlers(defaultDir, eventEmitter, { importMode: "sequential" }, async function (emitter, moduleExport, fileUrlHref, listenerPrependedArgs) {
-                    expect(emitter).toBeInstanceOf(EventEmitter);
+                    expect(emitter).toBeInstanceOf(nodeEvents.EventEmitter);
                     expect(typeof moduleExport === "object").toBeTruthy();
                     expect(typeof fileUrlHref === "string").toBeTruthy();
                     expect(listenerPrependedArgs.length).toBe(0);
