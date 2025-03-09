@@ -32,6 +32,7 @@ const DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS: LoadEventHandlersOptions = {
     listenerPrependedArgs: [],
     preferredNamedExport: DEFAULT_NAMED_EXPORT,
     preferredEventHandlerKeys: {},
+    isRecursive: false,
 };
 
 async function isValidDirectory(dirPath: PathLike) {
@@ -61,6 +62,41 @@ function hasAddListenerMethods(object: EventEmitter): boolean {
 
 function getMergedListenerArgs(prependedArgs: unknown[], emittedArgs: unknown[]) {
     return prependedArgs.length > 0 ? [...prependedArgs, ...emittedArgs] : emittedArgs;
+}
+
+async function getModules(
+    dirPath: string,
+    isRecurive = false,
+    filterCallback = function (fileName: string) {
+        return fileName.endsWith(".js") || fileName.endsWith(".ts") || fileName.endsWith(".cjs") || fileName.endsWith(".mjs");
+    },
+) {
+    try {
+        const entries = await nodeFsPromises.readdir(dirPath, { withFileTypes: true });
+        const files = entries.filter(function (entry) {
+            return entry.isFile();
+        });
+        const fileNames = files.map(function (file) {
+            return file.name;
+        });
+        let filteredFileNames = fileNames.filter(filterCallback);
+        if (isRecurive) {
+            for (const entry of entries) {
+                if (!entry.isDirectory()) {
+                    continue;
+                }
+                const subDirFiles = await getModules(nodePath.join(dirPath, entry.name), true, filterCallback);
+                filteredFileNames = filteredFileNames.concat(
+                    subDirFiles.map(function (file) {
+                        return nodePath.join(entry.name, file);
+                    }),
+                );
+            }
+        }
+        return filteredFileNames;
+    } catch {
+        return [];
+    }
 }
 
 /**
@@ -182,6 +218,7 @@ async function loadEventHandlers(
     const exportType = eventHandlerOptions.exportType;
     const listenerPrependedArgs = eventHandlerOptions.listenerPrependedArgs;
     const preferredNamedExport = eventHandlerOptions.preferredNamedExport;
+    const isRecursive = eventHandlerOptions.isRecursive;
     const preferredEventHandlerKeys = { ...DEFAULT_EVENT_HANDLER_KEY_NAMES, ...eventHandlerOptions.preferredEventHandlerKeys };
     const { name: nameKeyName, isOnce: isOnceKeyName, isPrepend: isPrependKeyName, execute: executeKeyName } = preferredEventHandlerKeys;
     /** Use 'not' operator to not omit undefined and empty strings passed in options */
@@ -206,15 +243,13 @@ async function loadEventHandlers(
     if (!preferredNamedExport || typeof preferredNamedExport !== "string") {
         throw new Error(`Invalid preferred named export: ${preferredNamedExport}. Must be a non-empty string.`);
     }
-    const eventHandlerFiles = await nodeFsPromises.readdir(dirPath);
+    const eventHandlerFiles = await getModules(dirPath, isRecursive);
     if (eventHandlerFiles.length === 0) {
         throw new Error(`Invalid event handler files. No event handler files found in directory: ${dirPath}`);
     }
     async function loadEventHandler(file: string) {
-        if (!file.endsWith(".js") && !file.endsWith(".ts") && !file.endsWith(".mjs") && !file.endsWith("cjs")) {
-            return;
-        }
         const filePath = nodePath.join(dirPath, file);
+        console.log(filePath);
         const fileUrlHref = nodeUrl.pathToFileURL(filePath).href;
         /**
          * Some type casts were necessary herebecause TypeScript

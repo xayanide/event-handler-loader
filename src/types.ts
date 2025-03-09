@@ -36,7 +36,7 @@ interface LoadEventHandlersOptions {
     listenerPrependedArgs?: unknown[];
     preferredNamedExport?: NamedExports;
     preferredEventHandlerKeys?: EventHandlerKeys;
-    bindEventListenerOverride?: BindEventListenerOverride;
+    isRecursive?: boolean;
 }
 
 type BindEventListenerOverride = (

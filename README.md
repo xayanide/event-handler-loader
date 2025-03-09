@@ -61,7 +61,14 @@ await loadEventHandlers(processEventsFolder, process, {
     preferredEventHandlerKeys: { name: "eventName", isOnce: "once", isPrepend: "prepend", execute: "run" },
     // Default value: []
     listenerPrependedArgs: ["myString", { number: 1 }],
-});
+    // Default value: false
+    isRecursive: true
+    },
+    // Default value: undefined (Uses built-in bindEventListener)
+    function (eventEmitterLike: EventEmitter, moduleExport: EventHandlerModuleExport, fileUrlHref: string, listenerPrependedArgs: unknown[]) {
+    // do my own thing
+    }
+);
 
 // Simulate an uncaughtException event.
 process.emit("uncaughtException", new Error("MyDeadlyError"));
@@ -208,9 +215,6 @@ await loadEventHandlers("./path/to/eventHandlers", objectWithEventEmitterMethods
     // Preferred export name to look for inside a module.
     // Setting exportType: "default" will ignore this option as "default"
     preferredNamedExport: "myCustomEventHandler",
-    // Default value: []
-    // Prepended (first) extra arguments passed to event handlers' listener callbacks
-    listenerPrependedArgs: ["IAmAvailableAsAParameterToAllEmittedEvents"],
     // Default value: { name: "name", isOnce: "isOnce", isPrepend: "isPrepend", execute: "execute" }
     // Preferred key names to look for within the exported object
     preferredEventHandlerKeys: {
@@ -219,7 +223,20 @@ await loadEventHandlers("./path/to/eventHandlers", objectWithEventEmitterMethods
         isPrepend: "prepend",
         execute: "run",
     },
-});
+    // Default value: []
+    // Prepended (first) extra arguments passed to event handlers' listener callbacks
+    listenerPrependedArgs: ["IAmAvailableAsAParameterToAllEmittedEvents"],
+    // Whether to recursively look for modules inside the provided directory path
+    // Default value: false
+    isRecursive: true
+    },
+    },
+    // Override the default built-in behavior for when binding event listeners.
+    // Default value: undefined (Uses built-in bindEventListener)
+    function (eventEmitterLike: EventEmitter, moduleExport: EventHandlerModuleExport, fileUrlHref: string, listenerPrependedArgs: unknown[]) {
+    // do my own thing
+    }
+);
 ```
 
 You can also choose to omit the options object entirely and stick to the default configuration

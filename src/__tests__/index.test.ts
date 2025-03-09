@@ -69,6 +69,11 @@ describe("event-handler-loader", () => {
             expect(eventEmitter.listenerCount("unhandledRejection")).toBe(0);
         });
 
+        it("load event handlers with sequential mode and recursively looks inside that path", async () => {
+            await expect(loadEventHandlers(defaultDir, eventEmitter, { importMode: "sequential", isRecursive: true })).resolves.toBeTruthy();
+            expect(eventEmitter.listenerCount("unhandledRejection")).toBe(3);
+        });
+
         it("load and invoke event handlers with sync or async methods", async () => {
             await expect(loadEventHandlers(asyncDir, eventEmitter, { exportType: "named" })).resolves.toBeTruthy();
             eventEmitter.emit("async");
@@ -196,8 +201,8 @@ describe("event-handler-loader", () => {
             await expect(loadEventHandlers(invalidValuesDir, eventEmitter, { exportType: "named" })).rejects.toThrow();
         });
 
-        it("handle files that are not js and ts", async () => {
-            await expect(loadEventHandlers(nonModuleDir, eventEmitter)).resolves.toBeTruthy();
+        it("handle files that are not javascript modules", async () => {
+            await expect(loadEventHandlers(nonModuleDir, eventEmitter)).rejects.toThrow();
         });
 
         it("handle loading preferredNameExport: uniqueEventHandler but has no matches", async () => {
