@@ -193,7 +193,7 @@ describe("event-handler-loader", () => {
         });
 
         it("handle loading named exports inside a directory with export default modules", async () => {
-            await expect(loadEventHandlers(defaultDir, eventEmitter, { exportType: "named", preferredNamedExport: "*" })).rejects.toThrow();
+            await expect(loadEventHandlers(defaultDir, eventEmitter, { exportType: "named", preferredNamedExport: "*" })).resolves.toBeTruthy();
         });
     });
 });
