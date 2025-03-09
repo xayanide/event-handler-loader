@@ -14,10 +14,10 @@ const DEFAULT_EVENT_HANDLER_KEY_NAMES = {
     isPrepend: "isPrepend",
     execute: "execute",
 };
-const DEFAULT_IMPORT_MODE = "parallel";
+const DEFAULT_IMPORT_MODE = "concurrent";
 const DEFAULT_EXPORT_TYPE = "default";
 const DEFAULT_NAMED_EXPORT = "eventHandler";
-const DEFAULT_IMPORT_MODES = ["parallel", "sequential"];
+const DEFAULT_IMPORT_MODES = ["concurrent", "sequential"];
 const DEFAULT_EXPORT_TYPES = ["default", "named"];
 const DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS: LoadEventHandlersOptions = {
     importMode: DEFAULT_IMPORT_MODE,
@@ -209,7 +209,7 @@ async function loadEventHandlers(dirPath: string, eventEmitterLike: EventEmitter
             bindEventListener(eventEmitterLike, moduleExport, preferredEventHandlerKeys, listenerPrependedArgs as unknown[], fileUrlHref);
         }
     }
-    if (importMode === "parallel") {
+    if (importMode === "concurrent") {
         await Promise.all(eventHandlerFiles.map(loadEventHandler));
     } else {
         for (const file of eventHandlerFiles) {

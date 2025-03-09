@@ -47,8 +47,8 @@ describe("event-handler-loader", () => {
             expect(console.log).toHaveBeenCalledWith("emittedarg2:", "eventArg2");
         });
 
-        it("load event handlers with parallel mode", async () => {
-            await expect(loadEventHandlers(defaultDir, eventEmitter, { importMode: "parallel" })).resolves.toBeTruthy();
+        it("load event handlers with concurrent mode", async () => {
+            await expect(loadEventHandlers(defaultDir, eventEmitter, { importMode: "concurrent" })).resolves.toBeTruthy();
             expect(eventEmitter.listenerCount("unhandledRejection")).toBe(1);
         });
 

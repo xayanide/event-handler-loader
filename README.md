@@ -53,7 +53,7 @@ const processEventsFolder = nodePath.join(eventHandlersFolder, "process");
 await loadEventHandlers(processEventsFolder, process, {
     // Default value: default
     exportType: "named",
-    // Default value: parallel
+    // Default value: concurrent
     importMode: "sequential",
     // Default value: "eventHandler"
     preferredNamedExport: "handler",
@@ -192,8 +192,8 @@ You can customize how event handlers are loaded using an options object:
 
 ```js
 await loadEventHandlers("./path/to/eventHandlers", objectWithEventEmitterMethods, {
-    // Default value: parallel
-    // Options: "parallel" or "sequential"
+    // Default value: concurrent
+    // Options: "concurrent" or "sequential"
     // How the module imports event handlers
     importMode: "sequential",
     // Default value: default
@@ -241,7 +241,7 @@ const processEvents = nodePath.join(eventHandlersFolder, "process");
 
 await loadEventHandlers(processEvents, process, {
     exportType: "named",
-    importMode: "parallel",
+    importMode: "concurrent",
     // Import all named exports from all modules in a directory together with exportType: "named"
     preferredNamedExport: "*",
     listenerPrependedArgs: ["myString", { number: 1 }],

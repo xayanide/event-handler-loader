@@ -22,7 +22,7 @@ interface EventHandlerKeys {
     execute?: string | "execute";
 }
 
-type ImportModes = "parallel" | "sequential";
+type ImportModes = "concurrent" | "sequential";
 
 type ExportTypes = "default" | "named";
 
