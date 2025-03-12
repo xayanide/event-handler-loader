@@ -26,7 +26,7 @@ interface EventHandlerKeys {
 
 type ImportModes = "concurrent" | "sequential";
 
-type ExportTypes = "default" | "named";
+type ExportTypes = "default" | "named" | "all";
 
 type NamedExports = string | "eventHandler" | "*";
 

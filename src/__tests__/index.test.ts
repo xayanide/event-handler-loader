@@ -11,6 +11,7 @@ const invalidValuesDir = nodePath.join(eventHandlers, "invalidValues");
 const defaultDir = nodePath.join(eventHandlers, "default");
 const namedDir = nodePath.join(eventHandlers, "named");
 const isOnceDir = nodePath.join(eventHandlers, "isOnce");
+const allDir = nodePath.join(eventHandlers, "all");
 const emptyDir = nodePath.join(eventHandlers, "empty");
 const asyncDir = nodePath.join(eventHandlers, "async");
 const prependArgsDir = nodePath.join(eventHandlers, "prependArgs");
@@ -136,6 +137,10 @@ describe("event-handler-loader", () => {
             ).resolves.toBeTruthy();
         });
 
+        it("load default and named exports with exportType all", async () => {
+            await expect(loadEventHandlers(allDir, eventEmitter, { exportType: "all" })).resolves.toBeTruthy();
+        });
+
         it("handle invalid directories", async () => {
             await expect(loadEventHandlers("/aaaaaaaaaaaaa", eventEmitter)).rejects.toThrow();
         });
@@ -217,8 +222,8 @@ describe("event-handler-loader", () => {
             await expect(loadEventHandlers(invalidValuesDir, eventEmitter, { exportType: "named" })).rejects.toThrow();
         });
 
-        it("handle files that are not javascript modules", async () => {
-            await expect(loadEventHandlers(nonModuleDir, eventEmitter)).rejects.toThrow();
+        it("handle ignoring files that are not modules", async () => {
+            await expect(loadEventHandlers(nonModuleDir, eventEmitter)).resolves.toBeTruthy();
         });
 
         it("handle loading preferredNameExport: uniqueEventHandler but has no matches", async () => {

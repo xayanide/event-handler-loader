@@ -1,7 +1,7 @@
-import * as nodePath from "node:path";
 import * as nodeUrl from "node:url";
 import * as nodeFsPromises from "node:fs/promises";
 import * as nodeUtilTypes from "node:util/types";
+import { getModules } from "file-folder-loader";
 import type { EventEmitter } from "node:events";
 import type { PathLike } from "node:fs";
 import type {
@@ -26,7 +26,7 @@ const DEFAULT_IMPORT_MODE = "concurrent";
 const DEFAULT_EXPORT_TYPE = "default";
 const DEFAULT_NAMED_EXPORT = "eventHandler";
 const DEFAULT_IMPORT_MODES = ["concurrent", "sequential"];
-const DEFAULT_EXPORT_TYPES = ["default", "named"];
+const DEFAULT_EXPORT_TYPES = ["default", "named", "all"];
 const DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS = {
     importMode: DEFAULT_IMPORT_MODE,
     exportType: DEFAULT_EXPORT_TYPE,
@@ -59,37 +59,6 @@ function hasAddListenerMethods(object: EventEmitter): boolean {
 
 function getMergedListenerArgs(prependedArgs: unknown[], emittedArgs: unknown[]) {
     return prependedArgs.length > 0 ? [...prependedArgs, ...emittedArgs] : emittedArgs;
-}
-
-async function getModules(
-    dirPath: string,
-    isRecurive: boolean,
-    filterCallback = function (fileName: string) {
-        return fileName.endsWith(".js") || fileName.endsWith(".ts") || fileName.endsWith(".cjs") || fileName.endsWith(".mjs");
-    },
-) {
-    const entries = await nodeFsPromises.readdir(dirPath, { withFileTypes: true });
-    const files = entries.filter(function (entry) {
-        return entry.isFile();
-    });
-    const fileNames = files.map(function (file) {
-        return file.name;
-    });
-    let filteredFileNames = fileNames.filter(filterCallback);
-    if (isRecurive) {
-        for (const entry of entries) {
-            if (!entry.isDirectory()) {
-                continue;
-            }
-            const subDirFiles = await getModules(nodePath.join(dirPath, entry.name), true, filterCallback);
-            filteredFileNames = filteredFileNames.concat(
-                subDirFiles.map(function (file) {
-                    return nodePath.join(entry.name, file);
-                }),
-            );
-        }
-    }
-    return filteredFileNames;
 }
 
 /**
@@ -166,31 +135,39 @@ function bindEventListener(
 async function importModule(fileUrlHref: string, exportType: string, preferredExportName: string) {
     const isNamedExportType = exportType === "named";
     const moduleNamespace: EventHandlerModuleNamespace = await import(fileUrlHref);
-    if (isNamedExportType && preferredExportName === "*") {
+    if (exportType === "all") {
         const moduleExports: EventHandlerModuleExport[] = [];
         for (const exportName in moduleNamespace) {
             const moduleExport = moduleNamespace[exportName];
-            if (!moduleExport || !Object.prototype.hasOwnProperty.call(moduleNamespace, exportName) || exportName === DEFAULT_EXPORT_NAME) {
-                console.error(`Invalid module. Must be a named export. Unable to verify named export '${exportName}'. Module: ${fileUrlHref}`);
+            if (!moduleExport || !Object.prototype.hasOwnProperty.call(moduleNamespace, exportName)) {
+                console.error(`Invalid module export. Must be a default or named export. Unable to verify export '${exportName}'. Module: ${fileUrlHref}`);
                 continue;
             }
             moduleExports.push(moduleExport);
         }
         return moduleExports;
-    } else {
-        const exportName = isNamedExportType ? preferredExportName : DEFAULT_EXPORT_NAME;
-        const moduleExport = moduleNamespace[exportName];
-        if (!moduleExport || !Object.prototype.hasOwnProperty.call(moduleNamespace, exportName)) {
-            throw new Error(
-                isNamedExportType
-                    ? `Invalid module. Must be a named export called '${preferredExportName}'. ${
-                          exportName === DEFAULT_EXPORT_NAME ? "Unable to verify named export" : "Unable to verify preferred export name"
-                      } '${exportName}'. Module: ${fileUrlHref}`
-                    : `Invalid module. Must be a default export. Unable to verify default export '${exportName}'. Module: ${fileUrlHref}`,
-            );
-        }
-        return [moduleExport];
     }
+    if (isNamedExportType && preferredExportName === "*") {
+        const moduleExports: EventHandlerModuleExport[] = [];
+        for (const exportName in moduleNamespace) {
+            const moduleExport = moduleNamespace[exportName];
+            if (!moduleExport || !Object.prototype.hasOwnProperty.call(moduleNamespace, exportName) || exportName === DEFAULT_EXPORT_NAME) {
+                console.error(`Invalid module export. Must be a named export. Unable to verify named export '${exportName}'. Module: ${fileUrlHref}`);
+                continue;
+            }
+            moduleExports.push(moduleExport);
+        }
+        return moduleExports;
+    }
+    const exportName = isNamedExportType ? preferredExportName : DEFAULT_EXPORT_NAME;
+    const moduleExport = moduleNamespace[exportName];
+    if (!moduleExport || !Object.prototype.hasOwnProperty.call(moduleNamespace, exportName)) {
+        const errorMessage = isNamedExportType
+            ? `Must be a named export called '${preferredExportName}'. ${exportName === DEFAULT_EXPORT_NAME ? "Unable to verify named export" : "Unable to verify preferred export name"} '${exportName}'.`
+            : `Must be a default export. Unable to verify default export '${exportName}'`;
+        throw new Error(`Invalid module export. ${errorMessage}. Module: ${fileUrlHref}`);
+    }
+    return [moduleExport];
 }
 
 async function loadEventHandlers(
@@ -239,9 +216,8 @@ async function loadEventHandlers(
     if (typeof isRecursive !== "boolean") {
         throw new Error(`Invalid isRecursive: '${isRecursive}'. Must be a boolean.`);
     }
-    const eventHandlerFiles = await getModules(dirPath, isRecursive);
-    async function loadEventHandler(file: string) {
-        const filePath = nodePath.join(dirPath, file);
+    const filePaths = await getModules(dirPath, { isRecursive: isRecursive, processMode: importMode });
+    async function loadEventHandler(filePath: string) {
         const fileUrlHref = nodeUrl.pathToFileURL(filePath).href;
         /**
          * Some type casts were necessary herebecause TypeScript
@@ -262,11 +238,11 @@ async function loadEventHandlers(
         }
     }
     if (importMode === "concurrent") {
-        await Promise.all(eventHandlerFiles.map(loadEventHandler));
+        await Promise.all(filePaths.map(loadEventHandler));
         return true;
     }
-    for (const file of eventHandlerFiles) {
-        await loadEventHandler(file);
+    for (const filePath of filePaths) {
+        await loadEventHandler(filePath);
     }
     return true;
 }
