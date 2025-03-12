@@ -227,17 +227,17 @@ async function loadEventHandlers(
          * - xaya
          */
         const moduleExports = await importModule(fileUrlHref, exportType as string, preferredNamedExport as string);
-        for (const moduleExport of moduleExports) {
+        moduleExports.map(async function (moduleExport) {
             if (typeof bindEventListenerOverride !== "function") {
                 bindEventListener(eventEmitterLike, moduleExport, preferredEventHandlerKeys, listenerPrependedArgs as unknown[], fileUrlHref);
-                continue;
+                return;
             }
             if (nodeUtilTypes.isAsyncFunction(bindEventListenerOverride)) {
                 await bindEventListenerOverride(eventEmitterLike, moduleExport, fileUrlHref, listenerPrependedArgs as unknown[]);
-                continue;
+                return;
             }
             bindEventListenerOverride(eventEmitterLike, moduleExport, fileUrlHref, listenerPrependedArgs as unknown[]);
-        }
+        });
     }
     if (importMode === "concurrent") {
         await Promise.all(filePaths.map(loadEventHandler));
