@@ -116,11 +116,11 @@ function bindEventListener(
         throw new Error(`Invalid value for key ${executeKeyName}: '${executeMethod}'. Must be a function. Module: ${fileUrlHref}`);
     }
     const listener = getAsyncAwareListener(executeMethod, listenerPrependedArgs);
+    if (isOnceValue && isPrependValue) {
+        eventEmitterLike.prependOnceListener(nameValue, listener);
+        return;
+    }
     if (isOnceValue) {
-        if (isPrependValue) {
-            eventEmitterLike.prependOnceListener(nameValue, listener);
-            return;
-        }
         eventEmitterLike.once(nameValue, listener);
         return;
     }
