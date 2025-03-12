@@ -3,6 +3,7 @@ import eslintPluginJs from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
 import stylisticEslintPlugin from "@stylistic/eslint-plugin";
 import tseslint from "typescript-eslint";
+import eslintPluginErasableSyntaxOnly from "eslint-plugin-erasable-syntax-only";
 
 const stylisticConfigPreferences = {
     formatting: {
@@ -31,16 +32,16 @@ const eslintConfigPreferences = {
     },
     codeQuality: {
         rules: {
-            "func-style": ["error", "declaration", { overrides: { namedExports: "ignore" } }],
+            "func-style": ["error", "declaration", { overrides: { namedExports: "declaration" } }],
             "no-console": "off",
             "radix": ["error", "always"],
-            "no-shadow": ["error", { builtinGlobals: true, hoist: "all", allow: [], ignoreOnInitialization: true }],
+            "no-shadow": ["error", { builtinGlobals: true, ignoreOnInitialization: true }],
             "no-negated-condition": "error",
             "no-unneeded-ternary": ["error", { defaultAssignment: true }],
             "no-nested-ternary": "error",
             "no-var": "error",
-            "no-use-before-define": ["error", { functions: false, classes: true, variables: true, allowNamedExports: false }],
-            "prefer-const": ["error", { destructuring: "any", ignoreReadBeforeAssign: false }],
+            "no-use-before-define": ["error", { functions: false }],
+            "prefer-const": ["error"],
             "require-await": "error",
             "strict": ["error", "global"],
             "yoda": "error",
@@ -100,8 +101,9 @@ export default [
             "no-shadow": "off",
         },
     },
-    /** Global config object with rules that overrides specific rules for Prettier to work well with ESLint */
+    /** Global config object with rules that may or may not override specific rules to work well with ESLint */
     eslintConfigPrettier,
+    eslintPluginErasableSyntaxOnly.configs.recommended,
     /**
      * Global config object with rules I don't want to be overriden no matter what rules are set above
      * https://github.com/prettier/eslint-config-prettier?tab=readme-ov-file#forbid-unnecessary-backticks
