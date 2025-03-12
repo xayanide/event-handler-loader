@@ -1,6 +1,7 @@
 import * as nodePath from "node:path";
 import * as nodeUrl from "node:url";
 import * as nodeFsPromises from "node:fs/promises";
+import * as nodeUtilTypes from "node:util/types";
 import type { EventEmitter } from "node:events";
 import type { PathLike } from "node:fs";
 import type {
@@ -26,7 +27,7 @@ const DEFAULT_EXPORT_TYPE = "default";
 const DEFAULT_NAMED_EXPORT = "eventHandler";
 const DEFAULT_IMPORT_MODES = ["concurrent", "sequential"];
 const DEFAULT_EXPORT_TYPES = ["default", "named"];
-const DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS: LoadEventHandlersOptions = {
+const DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS = {
     importMode: DEFAULT_IMPORT_MODE,
     exportType: DEFAULT_EXPORT_TYPE,
     listenerPrependedArgs: [],
@@ -42,10 +43,6 @@ async function isValidDirectory(dirPath: PathLike) {
     } catch {
         return false;
     }
-}
-
-function isAsyncFunction(fn: unknown) {
-    return typeof fn === "function" && fn.constructor.name === "AsyncFunction";
 }
 
 function hasAddListenerMethods(object: EventEmitter): boolean {
@@ -105,7 +102,7 @@ Note: isAsyncFunction cannot detect if a regular non-async function is async if 
 From what I've read, the only way to detect if a regular function returns a promise is to call it, which is not preferred in this case.
 */
 function getAsyncAwareListener(executeMethod: EventExecute, listenerPrependedArgs: unknown[]) {
-    if (isAsyncFunction(executeMethod)) {
+    if (nodeUtilTypes.isAsyncFunction(executeMethod)) {
         async function asyncListener(...listenerEmittedArgs: unknown[]) {
             const listenerArgs = getMergedListenerArgs(listenerPrependedArgs, listenerEmittedArgs);
             return await executeMethod(...listenerArgs);
@@ -204,48 +201,45 @@ async function loadEventHandlers(
 ) {
     const isValidDir = await isValidDirectory(dirPath);
     if (!isValidDir) {
-        throw new Error(`Invalid event handler directory path: ${dirPath}. Must be an existent directory.`);
+        throw new Error(`Invalid event handler directory path: '${dirPath}'. Must be an existent directory.`);
     }
     if (!hasAddListenerMethods(eventEmitterLike)) {
         throw new Error("Invalid eventEmitterLike instance. Must have EventEmitter methods.");
     }
-    const eventHandlerOptions = { ...DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS, ...options };
+    const eventHandlerOptions = { ...DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS, ...(options || {}) };
     const importMode = eventHandlerOptions.importMode;
     const exportType = eventHandlerOptions.exportType;
     const listenerPrependedArgs = eventHandlerOptions.listenerPrependedArgs;
     const preferredNamedExport = eventHandlerOptions.preferredNamedExport;
     const isRecursive = eventHandlerOptions.isRecursive;
-    const preferredEventHandlerKeys = { ...DEFAULT_EVENT_HANDLER_KEY_NAMES, ...eventHandlerOptions.preferredEventHandlerKeys };
+    const preferredEventHandlerKeys = { ...DEFAULT_EVENT_HANDLER_KEY_NAMES, ...(eventHandlerOptions.preferredEventHandlerKeys || {}) };
     const { name: nameKeyName, isOnce: isOnceKeyName, isPrepend: isPrependKeyName, execute: executeKeyName } = preferredEventHandlerKeys;
     /** Use 'not' operator to not omit undefined and empty strings passed in options */
     if (typeof nameKeyName !== "string" || nameKeyName.trim() === "") {
-        throw new Error(`Invalid value for preferredEventHandlerKeys name: '${nameKeyName}'. Must be a non-empty string.`);
+        throw new Error(`Invalid preferredEventHandlerKeys name: '${nameKeyName}'. Must be a non-empty string.`);
     }
     if (typeof isOnceKeyName !== "string" || isOnceKeyName.trim() === "") {
-        throw new Error(`Invalid value for preferredEventHandlerKeys isOnce: '${isOnceKeyName}'. Must be a non-empty string.`);
+        throw new Error(`Invalid preferredEventHandlerKeys isOnce: '${isOnceKeyName}'. Must be a non-empty string.`);
     }
     if (typeof isPrependKeyName !== "string" || isPrependKeyName.trim() === "") {
-        throw new Error(`Invalid value for preferredEventHandlerKeys isPrepend: '${isPrependKeyName}'. Must be a non-empty string.`);
+        throw new Error(`Invalid preferredEventHandlerKeys isPrepend: '${isPrependKeyName}'. Must be a non-empty string.`);
     }
     if (typeof executeKeyName !== "string" || executeKeyName.trim() === "") {
-        throw new Error(`Invalid value for preferredEventHandlerKeys execute: '${executeKeyName}'. Must be a non-empty string.`);
+        throw new Error(`Invalid preferredEventHandlerKeys execute: '${executeKeyName}'. Must be a non-empty string.`);
     }
-    if (!importMode || !DEFAULT_IMPORT_MODES.includes(importMode)) {
-        throw new Error(`Invalid import mode: ${importMode}. Must be one of string: ${DEFAULT_IMPORT_MODES.join(", ")}`);
+    if (!DEFAULT_IMPORT_MODES.includes(importMode)) {
+        throw new Error(`Invalid import mode: '${importMode}'. Must be one of string: ${DEFAULT_IMPORT_MODES.join(", ")}`);
     }
-    if (!exportType || !DEFAULT_EXPORT_TYPES.includes(exportType)) {
-        throw new Error(`Invalid export type: ${exportType}. Must be one of string: ${DEFAULT_EXPORT_TYPES.join(", ")}`);
+    if (!DEFAULT_EXPORT_TYPES.includes(exportType)) {
+        throw new Error(`Invalid export type: '${exportType}'. Must be one of string: ${DEFAULT_EXPORT_TYPES.join(", ")}`);
     }
     if (typeof preferredNamedExport !== "string" || preferredNamedExport.trim() === "") {
-        throw new Error(`Invalid preferred named export: ${preferredNamedExport}. Must be a non-empty string.`);
+        throw new Error(`Invalid preferred named export: '${preferredNamedExport}'. Must be a non-empty string.`);
     }
     if (typeof isRecursive !== "boolean") {
-        throw new Error(`Invalid isRecursive: ${isRecursive}. Must be a boolean.`);
+        throw new Error(`Invalid isRecursive: '${isRecursive}'. Must be a boolean.`);
     }
     const eventHandlerFiles = await getModules(dirPath, isRecursive);
-    if (eventHandlerFiles.length === 0) {
-        throw new Error(`Invalid event handler files. No event handler files found in directory: ${dirPath}`);
-    }
     async function loadEventHandler(file: string) {
         const filePath = nodePath.join(dirPath, file);
         const fileUrlHref = nodeUrl.pathToFileURL(filePath).href;
@@ -260,7 +254,7 @@ async function loadEventHandlers(
                 bindEventListener(eventEmitterLike, moduleExport, preferredEventHandlerKeys, listenerPrependedArgs as unknown[], fileUrlHref);
                 continue;
             }
-            if (isAsyncFunction(bindEventListenerOverride)) {
+            if (nodeUtilTypes.isAsyncFunction(bindEventListenerOverride)) {
                 await bindEventListenerOverride(eventEmitterLike, moduleExport, fileUrlHref, listenerPrependedArgs as unknown[]);
                 continue;
             }
@@ -269,10 +263,10 @@ async function loadEventHandlers(
     }
     if (importMode === "concurrent") {
         await Promise.all(eventHandlerFiles.map(loadEventHandler));
-    } else {
-        for (const file of eventHandlerFiles) {
-            await loadEventHandler(file);
-        }
+        return true;
+    }
+    for (const file of eventHandlerFiles) {
+        await loadEventHandler(file);
     }
     return true;
 }
