@@ -12,6 +12,7 @@ const defaultDir = nodePath.join(eventHandlers, "default");
 const namedDir = nodePath.join(eventHandlers, "named");
 const isOnceDir = nodePath.join(eventHandlers, "isOnce");
 const allDir = nodePath.join(eventHandlers, "all");
+const allInvalidDir = nodePath.join(eventHandlers, "allInvalid");
 const emptyDir = nodePath.join(eventHandlers, "empty");
 const asyncDir = nodePath.join(eventHandlers, "async");
 const prependArgsDir = nodePath.join(eventHandlers, "prependArgs");
@@ -118,6 +119,10 @@ describe("event-handler-loader", () => {
             expect(eventEmitter.listenerCount("multiHandlerEvent")).toBe(0);
         });
 
+        it("load event handlers with omitted options", async () => {
+            await expect(loadEventHandlers(isOnceDir, eventEmitter, {})).resolves.toBeTruthy();
+        });
+
         it("load event handlers with specifically ommited preferredEventHandlerKeys", async () => {
             // Omit name
             await expect(
@@ -139,6 +144,10 @@ describe("event-handler-loader", () => {
 
         it("load default and named exports with exportType all", async () => {
             await expect(loadEventHandlers(allDir, eventEmitter, { exportType: "all" })).resolves.toBeTruthy();
+        });
+
+        it("handle not finding default and named exports with exportType all", async () => {
+            await expect(loadEventHandlers(allInvalidDir, eventEmitter, { exportType: "all" })).rejects.toThrow();
         });
 
         it("handle invalid directories", async () => {
@@ -212,6 +221,11 @@ describe("event-handler-loader", () => {
                     preferredEventHandlerKeys: { name: "name", isOnce: "isOnce", isPrepend: "isPrepend", execute: 1 as unknown as string },
                 }),
             ).rejects.toThrow();
+        });
+
+        it("handle invalid event handler options", async () => {
+            await expect(loadEventHandlers(isOnceDir, eventEmitter, null as unknown as any)).rejects.toThrow();
+            await expect(loadEventHandlers(isOnceDir, eventEmitter, [] as unknown as any)).rejects.toThrow();
         });
 
         it("handle invalid event handler keys: name, execute. (Should be able to omit isOnce and isPrepend)", async () => {

@@ -31,4 +31,5 @@ export default {
     }),
     coverageDirectory: "./coverage",
     testPathIgnorePatterns: ["/node_modules/", "/dist/"],
+    coveragePathIgnorePatterns: ["/node_modules/", "/dist/", "/src/__tests__/events/"],
 };
