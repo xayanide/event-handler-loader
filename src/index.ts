@@ -77,13 +77,12 @@ function getAsyncAwareListener(executeMethod: EventExecute, listenerPrependedArg
             return await executeMethod(...listenerArgs);
         }
         return asyncListener;
-    } else {
-        function syncListener(...listenerEmittedArgs: unknown[]) {
-            const listenerArgs = getMergedListenerArgs(listenerPrependedArgs, listenerEmittedArgs);
-            return executeMethod(...listenerArgs);
-        }
-        return syncListener;
     }
+    function syncListener(...listenerEmittedArgs: unknown[]) {
+        const listenerArgs = getMergedListenerArgs(listenerPrependedArgs, listenerEmittedArgs);
+        return executeMethod(...listenerArgs);
+    }
+    return syncListener;
 }
 
 function bindEventListener(
@@ -123,13 +122,13 @@ function bindEventListener(
             return;
         }
         eventEmitterLike.once(nameValue, listener);
-    } else {
-        if (isPrependValue) {
-            eventEmitterLike.prependListener(nameValue, listener);
-            return;
-        }
-        eventEmitterLike.on(nameValue, listener);
+        return;
     }
+    if (isPrependValue) {
+        eventEmitterLike.prependListener(nameValue, listener);
+        return;
+    }
+    eventEmitterLike.on(nameValue, listener);
 }
 
 async function importModule(fileUrlHref: string, exportType: string, preferredExportName: string) {
@@ -223,7 +222,7 @@ async function loadEventHandlers(
     async function loadEventHandler(filePath: string) {
         const fileUrlHref = nodeUrl.pathToFileURL(filePath).href;
         /**
-         * Some type casts were necessary herebecause TypeScript
+         * Some type casts were necessary here because TypeScript
          * didn't consider the guard clauses outside this async function declaration
          * - xaya
          */
