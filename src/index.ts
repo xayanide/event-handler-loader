@@ -48,7 +48,7 @@ async function isValidDirectory(dirPath: PathLike) {
 function hasAddListenerMethods(object: EventEmitter): boolean {
     function hasMethod(methodName: string) {
         const method = (object as unknown as Record<string, unknown>)[methodName];
-        if (!method || typeof method !== "function") {
+        if (typeof method !== "function") {
             return false;
         }
         return true;
