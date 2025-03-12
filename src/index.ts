@@ -183,6 +183,9 @@ async function loadEventHandlers(
     if (!hasAddListenerMethods(eventEmitterLike)) {
         throw new Error("Invalid eventEmitterLike instance. Must have EventEmitter methods.");
     }
+    if (options !== undefined && (options === null || typeof options !== "object" || Array.isArray(options))) {
+        throw new Error(`Invalid options: '${options}'. Must be a an object.`);
+    }
     const eventHandlerOptions = { ...DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS, ...(options || {}) };
     const importMode = eventHandlerOptions.importMode;
     const exportType = eventHandlerOptions.exportType;
