@@ -54,9 +54,9 @@ await loadEventHandlers(processEventsFolder, process, {
     // Default value: default
     exportType: "named",
     // Default value: concurrent
-    importMode: "sequential",
+    processMode: "sequential",
     // Default value: "eventHandler"
-    preferredNamedExport: "handler",
+    preferredExportName: "handler",
     // Default value: { name: "name", isOnce: "isOnce", isPrepend: "isPrepend", execute: "execute" }
     preferredEventHandlerKeys: { name: "eventName", isOnce: "once", isPrepend: "prepend", execute: "run" },
     // Default value: []
@@ -79,13 +79,13 @@ process.emit("uncaughtException", new Error("MyDeadlyError"));
 
 #### Creating Event Handlers
 
-With `exportType: named`, it'll look for exports with a specific configured `preferredNamedExport: handler` in this example. It's `eventHandler` by default.
+With `exportType: named`, it'll look for exports with a specific configured `preferredExportName: handler` in this example. It's `eventHandler` by default.
 
 ```ts
 // src/eventHandlers/process/named.ts
 
 // exportType: named
-// preferredNamedExport: handler
+// preferredExportName: handler
 export const handler = {
     // Keys follow as configured preferredEventHandlerKeys: { name: "eventName", isOnce: "once", isPrepend: "prepend", execute: "run" }
     eventName: "uncaughtException",
@@ -111,7 +111,7 @@ With `exportType: default`, it'll look for default exports exclusively, so you'l
 // src/eventHandlers/process/default.ts
 
 // exportType: default
-// (ignored) preferredNamedExport: handler (preferredNamedExport is ignored because it's configured to find default exports only)
+// (ignored) preferredExportName: handler (preferredExportName is ignored because it's configured to find default exports only)
 export default {
     // Keys follow as configured preferredEventHandlerKeys: { name: "eventName", isOnce: "once", isPrepend: "prepend", execute: "run" }
     eventName: "uncaughtException",
@@ -202,7 +202,7 @@ await loadEventHandlers("./path/to/eventHandlers", objectWithEventEmitterMethods
     // Default value: concurrent
     // Options: "concurrent" or "sequential"
     // How the module imports event handlers
-    importMode: "sequential",
+    processMode: "sequential",
     // Default value: default
     // Options: "default" or "named"
     // The type of export the module should look for in a directory. One export type per directory.
@@ -214,7 +214,7 @@ await loadEventHandlers("./path/to/eventHandlers", objectWithEventEmitterMethods
     // follows the event handler structure regardless of how they're named.
     // Preferred export name to look for inside a module.
     // Setting exportType: "default" will ignore this option as "default"
-    preferredNamedExport: "myCustomEventHandler",
+    preferredExportName: "myCustomEventHandler",
     // Default value: { name: "name", isOnce: "isOnce", isPrepend: "isPrepend", execute: "execute" }
     // Preferred key names to look for within the exported object
     preferredEventHandlerKeys: {
@@ -258,9 +258,9 @@ const processEvents = nodePath.join(eventHandlersFolder, "process");
 
 await loadEventHandlers(processEvents, process, {
     exportType: "named",
-    importMode: "concurrent",
+    processMode: "concurrent",
     // Import all named exports from all modules in a directory together with exportType: "named"
-    preferredNamedExport: "*",
+    preferredExportName: "*",
     listenerPrependedArgs: ["myString", { number: 1 }],
 });
 
