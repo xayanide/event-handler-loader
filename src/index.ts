@@ -178,14 +178,14 @@ async function loadEventHandlers(
         filePaths,
         async function (moduleExport, fileUrlHref) {
             if (typeof bindEventListenerOverride !== "function") {
-                bindEventListener(eventEmitterLike, moduleExport as EventHandlerModuleExport, preferredEventHandlerKeys, listenerPrependedArgs as unknown[], fileUrlHref);
+                bindEventListener(eventEmitterLike, moduleExport as EventHandlerModuleExport, preferredEventHandlerKeys, listenerPrependedArgs, fileUrlHref);
                 return;
             }
             if (nodeUtilTypes.isAsyncFunction(bindEventListenerOverride)) {
-                await bindEventListenerOverride(eventEmitterLike, moduleExport as EventHandlerModuleExport, fileUrlHref, listenerPrependedArgs as unknown[]);
+                await bindEventListenerOverride(eventEmitterLike, moduleExport as EventHandlerModuleExport, fileUrlHref, listenerPrependedArgs);
                 return;
             }
-            bindEventListenerOverride(eventEmitterLike, moduleExport as EventHandlerModuleExport, fileUrlHref, listenerPrependedArgs as unknown[]);
+            bindEventListenerOverride(eventEmitterLike, moduleExport as EventHandlerModuleExport, fileUrlHref, listenerPrependedArgs);
         },
         { exportType: exportType as ExportType, preferredExportName: preferredExportName, processMode: processMode as ProcessMode },
     );
