@@ -1,20 +1,11 @@
-import * as nodeUrl from "node:url";
 import * as nodePath from "node:path";
 import * as nodeFsPromises from "node:fs/promises";
 import * as nodeUtilTypes from "node:util/types";
-import { getModules } from "file-folder-loader";
+import { getModules, loadModules } from "file-folder-loader";
 import type { EventEmitter } from "node:events";
 import type { PathLike } from "node:fs";
-import type {
-    EventExecute,
-    EventHandlerModuleExport,
-    EventHandlerModuleNamespace,
-    EventHandlerKeys,
-    LoadEventHandlersOptions,
-    BindEventListenerOverride,
-} from "./types.js";
+import type { ProcessMode, ExportType, EventExecute, EventHandlerModuleExport, EventHandlerKeys, LoadEventHandlersOptions, BindEventListenerOverride } from "./types.js";
 
-const DEFAULT_EXPORT_NAME = "default";
 const EVENT_EMITTER_ADD_LISTENER_METHOD_NAMES = ["on", "once", "addListener", "prependListener", "prependOnceListener"];
 
 const DEFAULT_EVENT_HANDLER_KEY_NAMES = {
@@ -23,16 +14,16 @@ const DEFAULT_EVENT_HANDLER_KEY_NAMES = {
     isPrepend: "isPrepend",
     execute: "execute",
 };
-const DEFAULT_IMPORT_MODE = "concurrent";
+const DEFAULT_PROCESS_MODE = "concurrent";
 const DEFAULT_EXPORT_TYPE = "default";
 const DEFAULT_NAMED_EXPORT = "eventHandler";
 const DEFAULT_IMPORT_MODES = ["concurrent", "sequential"];
 const DEFAULT_EXPORT_TYPES = ["default", "named", "all"];
 const DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS = {
-    importMode: DEFAULT_IMPORT_MODE,
+    processMode: DEFAULT_PROCESS_MODE,
     exportType: DEFAULT_EXPORT_TYPE,
     listenerPrependedArgs: [],
-    preferredNamedExport: DEFAULT_NAMED_EXPORT,
+    preferredExportName: DEFAULT_NAMED_EXPORT,
     preferredEventHandlerKeys: {},
     isRecursive: false,
 };
@@ -132,44 +123,6 @@ function bindEventListener(
     eventEmitterLike.on(nameValue, listener);
 }
 
-async function importModule(fileUrlHref: string, exportType: string, preferredExportName: string) {
-    const isNamedExportType = exportType === "named";
-    const moduleNamespace: EventHandlerModuleNamespace = await import(fileUrlHref);
-    if (exportType === "all") {
-        const moduleExports: EventHandlerModuleExport[] = [];
-        for (const exportName in moduleNamespace) {
-            const moduleExport = moduleNamespace[exportName];
-            if (!moduleExport || !Object.prototype.hasOwnProperty.call(moduleNamespace, exportName)) {
-                console.error(`Invalid module export. Must be a default or named export. Unable to verify export '${exportName}'. Module: ${fileUrlHref}`);
-                continue;
-            }
-            moduleExports.push(moduleExport);
-        }
-        return moduleExports;
-    }
-    if (isNamedExportType && preferredExportName === "*") {
-        const moduleExports: EventHandlerModuleExport[] = [];
-        for (const exportName in moduleNamespace) {
-            const moduleExport = moduleNamespace[exportName];
-            if (!moduleExport || !Object.prototype.hasOwnProperty.call(moduleNamespace, exportName) || exportName === DEFAULT_EXPORT_NAME) {
-                console.error(`Invalid module export. Must be a named export. Unable to verify named export '${exportName}'. Module: ${fileUrlHref}`);
-                continue;
-            }
-            moduleExports.push(moduleExport);
-        }
-        return moduleExports;
-    }
-    const exportName = isNamedExportType ? preferredExportName : DEFAULT_EXPORT_NAME;
-    const moduleExport = moduleNamespace[exportName];
-    if (!moduleExport || !Object.prototype.hasOwnProperty.call(moduleNamespace, exportName)) {
-        const errorMessage = isNamedExportType
-            ? `Must be a named export called '${preferredExportName}'. ${exportName === DEFAULT_EXPORT_NAME ? "Unable to verify named export" : "Unable to verify preferred export name"} '${exportName}'.`
-            : `Must be a default export. Unable to verify default export '${exportName}'`;
-        throw new Error(`Invalid module export. ${errorMessage}. Module: ${fileUrlHref}`);
-    }
-    return [moduleExport];
-}
-
 async function loadEventHandlers(
     dirPath: string,
     eventEmitterLike: EventEmitter,
@@ -188,10 +141,10 @@ async function loadEventHandlers(
         throw new Error(`Invalid options: '${options}'. Must be a an object.`);
     }
     const eventHandlerOptions = { ...DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS, ...(options || {}) };
-    const importMode = eventHandlerOptions.importMode;
+    const processMode = eventHandlerOptions.processMode;
     const exportType = eventHandlerOptions.exportType;
     const listenerPrependedArgs = eventHandlerOptions.listenerPrependedArgs;
-    const preferredNamedExport = eventHandlerOptions.preferredNamedExport;
+    const preferredExportName = eventHandlerOptions.preferredExportName;
     const isRecursive = eventHandlerOptions.isRecursive;
     const preferredEventHandlerKeys = { ...DEFAULT_EVENT_HANDLER_KEY_NAMES, ...(eventHandlerOptions.preferredEventHandlerKeys || {}) };
     const { name: nameKeyName, isOnce: isOnceKeyName, isPrepend: isPrependKeyName, execute: executeKeyName } = preferredEventHandlerKeys;
@@ -208,46 +161,34 @@ async function loadEventHandlers(
     if (typeof executeKeyName !== "string" || executeKeyName.trim() === "") {
         throw new Error(`Invalid preferredEventHandlerKeys execute: '${executeKeyName}'. Must be a non-empty string.`);
     }
-    if (!DEFAULT_IMPORT_MODES.includes(importMode)) {
-        throw new Error(`Invalid import mode: '${importMode}'. Must be one of string: ${DEFAULT_IMPORT_MODES.join(", ")}`);
+    if (!DEFAULT_IMPORT_MODES.includes(processMode)) {
+        throw new Error(`Invalid process mode: '${processMode}'. Must be one of string: ${DEFAULT_IMPORT_MODES.join(", ")}`);
     }
     if (!DEFAULT_EXPORT_TYPES.includes(exportType)) {
         throw new Error(`Invalid export type: '${exportType}'. Must be one of string: ${DEFAULT_EXPORT_TYPES.join(", ")}`);
     }
-    if (typeof preferredNamedExport !== "string" || preferredNamedExport.trim() === "") {
-        throw new Error(`Invalid preferred named export: '${preferredNamedExport}'. Must be a non-empty string.`);
+    if (typeof preferredExportName !== "string" || preferredExportName.trim() === "") {
+        throw new Error(`Invalid preferred export name: '${preferredExportName}'. Must be a non-empty string.`);
     }
     if (typeof isRecursive !== "boolean") {
         throw new Error(`Invalid isRecursive: '${isRecursive}'. Must be a boolean.`);
     }
-    const filePaths = await getModules(absolutePath, { isRecursive: isRecursive, processMode: importMode });
-    async function loadEventHandler(filePath: string) {
-        const fileUrlHref = nodeUrl.pathToFileURL(filePath).href;
-        /**
-         * Some type casts were necessary here because TypeScript
-         * didn't consider the guard clauses outside this async function declaration
-         * - xaya
-         */
-        const moduleExports = await importModule(fileUrlHref, exportType as string, preferredNamedExport as string);
-        for (const moduleExport of moduleExports) {
+    const filePaths = await getModules(absolutePath, { isRecursive: isRecursive, processMode: processMode });
+    await loadModules(
+        filePaths,
+        async function (moduleExport, fileUrlHref) {
             if (typeof bindEventListenerOverride !== "function") {
-                bindEventListener(eventEmitterLike, moduleExport, preferredEventHandlerKeys, listenerPrependedArgs as unknown[], fileUrlHref);
-                continue;
+                bindEventListener(eventEmitterLike, moduleExport as EventHandlerModuleExport, preferredEventHandlerKeys, listenerPrependedArgs as unknown[], fileUrlHref);
+                return;
             }
             if (nodeUtilTypes.isAsyncFunction(bindEventListenerOverride)) {
-                await bindEventListenerOverride(eventEmitterLike, moduleExport, fileUrlHref, listenerPrependedArgs as unknown[]);
-                continue;
+                await bindEventListenerOverride(eventEmitterLike, moduleExport as EventHandlerModuleExport, fileUrlHref, listenerPrependedArgs as unknown[]);
+                return;
             }
-            bindEventListenerOverride(eventEmitterLike, moduleExport, fileUrlHref, listenerPrependedArgs as unknown[]);
-        }
-    }
-    if (importMode === "concurrent") {
-        await Promise.all(filePaths.map(loadEventHandler));
-        return true;
-    }
-    for (const filePath of filePaths) {
-        await loadEventHandler(filePath);
-    }
+            bindEventListenerOverride(eventEmitterLike, moduleExport as EventHandlerModuleExport, fileUrlHref, listenerPrependedArgs as unknown[]);
+        },
+        { exportType: exportType as ExportType, preferredExportName: preferredExportName, processMode: processMode as ProcessMode },
+    );
     return true;
 }
 

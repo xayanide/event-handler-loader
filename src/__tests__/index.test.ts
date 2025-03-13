@@ -50,18 +50,18 @@ describe("event-handler-loader", () => {
         });
 
         it("load event handlers with concurrent mode", async () => {
-            await expect(loadEventHandlers(defaultDir, eventEmitter, { importMode: "concurrent" })).resolves.toBeTruthy();
+            await expect(loadEventHandlers(defaultDir, eventEmitter, { processMode: "concurrent" })).resolves.toBeTruthy();
             expect(eventEmitter.listenerCount("unhandledRejection")).toBe(1);
         });
 
         it("load event handlers with sequential mode", async () => {
-            await expect(loadEventHandlers(defaultDir, eventEmitter, { importMode: "sequential" })).resolves.toBeTruthy();
+            await expect(loadEventHandlers(defaultDir, eventEmitter, { processMode: "sequential" })).resolves.toBeTruthy();
             expect(eventEmitter.listenerCount("unhandledRejection")).toBe(1);
         });
 
         it("load event handlers with sequential mode and overriden callback sync and async ", async () => {
             await expect(
-                loadEventHandlers(defaultDir, eventEmitter, { importMode: "sequential" }, function (emitter, moduleExport, fileUrlHref, listenerPrependedArgs) {
+                loadEventHandlers(defaultDir, eventEmitter, { processMode: "sequential" }, function (emitter, moduleExport, fileUrlHref, listenerPrependedArgs) {
                     expect(emitter).toBeInstanceOf(nodeEvents.EventEmitter);
                     expect(typeof moduleExport === "object").toBeTruthy();
                     expect(typeof fileUrlHref === "string").toBeTruthy();
@@ -69,7 +69,7 @@ describe("event-handler-loader", () => {
                 }),
             ).resolves.toBeTruthy();
             await expect(
-                loadEventHandlers(defaultDir, eventEmitter, { importMode: "sequential" }, async function (emitter, moduleExport, fileUrlHref, listenerPrependedArgs) {
+                loadEventHandlers(defaultDir, eventEmitter, { processMode: "sequential" }, async function (emitter, moduleExport, fileUrlHref, listenerPrependedArgs) {
                     expect(emitter).toBeInstanceOf(nodeEvents.EventEmitter);
                     expect(typeof moduleExport === "object").toBeTruthy();
                     expect(typeof fileUrlHref === "string").toBeTruthy();
@@ -83,7 +83,7 @@ describe("event-handler-loader", () => {
         });
 
         it("load event handlers with sequential mode and recursively looks inside that path", async () => {
-            await expect(loadEventHandlers(defaultDir, eventEmitter, { importMode: "sequential", isRecursive: true })).resolves.toBeTruthy();
+            await expect(loadEventHandlers(defaultDir, eventEmitter, { processMode: "sequential", isRecursive: true })).resolves.toBeTruthy();
             expect(eventEmitter.listenerCount("unhandledRejection")).toBe(3);
         });
 
@@ -108,12 +108,12 @@ describe("event-handler-loader", () => {
         });
 
         it("load all module's named exports that listen the same event", async () => {
-            await expect(loadEventHandlers(namedDir, eventEmitter, { exportType: "named", preferredNamedExport: "*" })).resolves.toBeTruthy();
+            await expect(loadEventHandlers(namedDir, eventEmitter, { exportType: "named", preferredExportName: "*" })).resolves.toBeTruthy();
             expect(eventEmitter.listenerCount("multiHandlerEvent")).toBe(3);
         });
 
         it("load all event handlers with isOnce true, then removes itself after emit", async () => {
-            await expect(loadEventHandlers(isOnceDir, eventEmitter, { exportType: "named", preferredNamedExport: "*" })).resolves.toBeTruthy();
+            await expect(loadEventHandlers(isOnceDir, eventEmitter, { exportType: "named", preferredExportName: "*" })).resolves.toBeTruthy();
             expect(eventEmitter.listenerCount("multiHandlerEvent")).toBe(2);
             eventEmitter.emit("multiHandlerEvent");
             expect(eventEmitter.listenerCount("multiHandlerEvent")).toBe(0);
@@ -171,8 +171,8 @@ describe("event-handler-loader", () => {
             await expect(loadEventHandlers(namedDir, eventEmitter)).rejects.toThrow();
         });
 
-        it("handle importing named exports with exportType named and preferredNamedExport default", async () => {
-            await expect(loadEventHandlers(namedDir, eventEmitter, { exportType: "named", preferredNamedExport: "default" })).rejects.toThrow();
+        it("handle importing named exports with exportType named and preferredExportName default", async () => {
+            await expect(loadEventHandlers(namedDir, eventEmitter, { exportType: "named", preferredExportName: "default" })).rejects.toThrow();
         });
 
         it("handle importing default exports with exportType named", async () => {
@@ -180,13 +180,13 @@ describe("event-handler-loader", () => {
         });
 
         it("handle empty strings and non-string loadEventHandlers options", async () => {
-            await expect(loadEventHandlers(defaultDir, eventEmitter, { importMode: "" as "sequential" })).rejects.toThrow();
+            await expect(loadEventHandlers(defaultDir, eventEmitter, { processMode: "" as "sequential" })).rejects.toThrow();
             await expect(loadEventHandlers(defaultDir, eventEmitter, { exportType: "" as "default" })).rejects.toThrow();
-            await expect(loadEventHandlers(defaultDir, eventEmitter, { preferredNamedExport: "" })).rejects.toThrow();
+            await expect(loadEventHandlers(defaultDir, eventEmitter, { preferredExportName: "" })).rejects.toThrow();
             await expect(loadEventHandlers(defaultDir, eventEmitter, { isRecursive: "" as unknown as boolean })).rejects.toThrow();
-            await expect(loadEventHandlers(defaultDir, eventEmitter, { importMode: 1 as unknown as "sequential" })).rejects.toThrow();
+            await expect(loadEventHandlers(defaultDir, eventEmitter, { processMode: 1 as unknown as "sequential" })).rejects.toThrow();
             await expect(loadEventHandlers(defaultDir, eventEmitter, { exportType: 1 as unknown as "default" })).rejects.toThrow();
-            await expect(loadEventHandlers(defaultDir, eventEmitter, { preferredNamedExport: 1 as unknown as "" })).rejects.toThrow();
+            await expect(loadEventHandlers(defaultDir, eventEmitter, { preferredExportName: 1 as unknown as "" })).rejects.toThrow();
         });
 
         it("handle empty strings non-string preferredEventHandlerKeys options", async () => {
@@ -242,11 +242,11 @@ describe("event-handler-loader", () => {
         });
 
         it("handle loading preferredNameExport: uniqueEventHandler but has no matches", async () => {
-            await expect(loadEventHandlers(namedDir, eventEmitter, { exportType: "named", preferredNamedExport: "uniqueEventHandler" })).rejects.toThrow();
+            await expect(loadEventHandlers(namedDir, eventEmitter, { exportType: "named", preferredExportName: "uniqueEventHandler" })).rejects.toThrow();
         });
 
         it("handle loading named exports inside a directory with export default modules", async () => {
-            await expect(loadEventHandlers(defaultDir, eventEmitter, { exportType: "named", preferredNamedExport: "*" })).resolves.toBeTruthy();
+            await expect(loadEventHandlers(defaultDir, eventEmitter, { exportType: "named", preferredExportName: "*" })).resolves.toBeTruthy();
         });
     });
 });

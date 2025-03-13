@@ -24,17 +24,17 @@ interface EventHandlerKeys {
     execute?: string | "execute";
 }
 
-type ImportModes = "concurrent" | "sequential";
+type ProcessMode = "concurrent" | "sequential";
 
-type ExportTypes = "default" | "named" | "all";
+type ExportType = "default" | "named" | "all";
 
-type NamedExports = string | "eventHandler" | "*";
+type preferredExportName = string | "eventHandler" | "*";
 
 interface LoadEventHandlersOptions {
-    importMode?: ImportModes;
-    exportType?: ExportTypes;
+    processMode?: ProcessMode;
+    exportType?: ExportType;
     listenerPrependedArgs?: unknown[];
-    preferredNamedExport?: NamedExports;
+    preferredExportName?: preferredExportName;
     preferredEventHandlerKeys?: EventHandlerKeys;
     isRecursive?: boolean;
 }
@@ -49,11 +49,12 @@ type BindEventListenerOverride = (
 export type {
     BindEventListenerOverride,
     EventExecute,
+    ExportType,
     EventHandlerKeys,
     EventHandlerModuleExport,
     EventHandlerModuleNamespace,
     EventName,
-    ImportModes,
+    ProcessMode,
     LoadEventHandlersOptions,
-    NamedExports,
+    preferredExportName,
 };
