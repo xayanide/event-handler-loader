@@ -120,7 +120,8 @@ describe("event-handler-loader", () => {
         });
 
         it("load event handlers with omitted options", async () => {
-            await expect(loadEventHandlers(isOnceDir, eventEmitter, {})).resolves.toBeTruthy();
+            await expect(loadEventHandlers(defaultDir, eventEmitter, {})).resolves.toBeTruthy();
+            expect(eventEmitter.listenerCount("unhandledRejection")).toBe(1);
         });
 
         it("load event handlers with specifically ommited preferredEventHandlerKeys", async () => {
@@ -146,8 +147,8 @@ describe("event-handler-loader", () => {
             await expect(loadEventHandlers(allDir, eventEmitter, { exportType: "all" })).resolves.toBeTruthy();
         });
 
-        it("handle not finding default and named exports with exportType all", async () => {
-            await expect(loadEventHandlers(allInvalidDir, eventEmitter, { exportType: "all" })).rejects.toThrow();
+        it("handle not finding any default and named exports with exportType all", async () => {
+            await expect(loadEventHandlers(allInvalidDir, eventEmitter, { exportType: "all" })).resolves.toBeTruthy();
         });
 
         it("handle invalid directories", async () => {

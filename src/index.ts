@@ -1,4 +1,5 @@
 import * as nodeUrl from "node:url";
+import * as nodePath from "node:path";
 import * as nodeFsPromises from "node:fs/promises";
 import * as nodeUtilTypes from "node:util/types";
 import { getModules } from "file-folder-loader";
@@ -175,9 +176,10 @@ async function loadEventHandlers(
     options?: LoadEventHandlersOptions,
     bindEventListenerOverride?: BindEventListenerOverride,
 ) {
-    const isValidDir = await isValidDirectory(dirPath);
+    const absolutePath = nodePath.resolve(dirPath);
+    const isValidDir = await isValidDirectory(absolutePath);
     if (!isValidDir) {
-        throw new Error(`Invalid event handler directory path: '${dirPath}'. Must be an existent directory.`);
+        throw new Error(`Invalid event handler directory path: '${absolutePath}'. Must be an existent accessible directory.`);
     }
     if (!hasAddListenerMethods(eventEmitterLike)) {
         throw new Error("Invalid eventEmitterLike instance. Must have EventEmitter methods.");
@@ -218,7 +220,7 @@ async function loadEventHandlers(
     if (typeof isRecursive !== "boolean") {
         throw new Error(`Invalid isRecursive: '${isRecursive}'. Must be a boolean.`);
     }
-    const filePaths = await getModules(dirPath, { isRecursive: isRecursive, processMode: importMode });
+    const filePaths = await getModules(absolutePath, { isRecursive: isRecursive, processMode: importMode });
     async function loadEventHandler(filePath: string) {
         const fileUrlHref = nodeUrl.pathToFileURL(filePath).href;
         /**
