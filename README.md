@@ -28,7 +28,7 @@ This utility simplifies things by automatically loading event handlers from a di
 
 #### Creating Event Handlers
 
-Each event handler should be a JavaScript/TypeScript module with *any file name* that exports an object with the required properties: `name`, `isOnce`, `execute`.
+Each event handler should be a JavaScript/TypeScript module with *any file name* that exports an object with the required properties: `name`, `execute()`, you can change the how the keys are named below.
 
 ### Simplest Example with Node.js' `process` Events
 
