@@ -1,10 +1,10 @@
 import * as nodePath from "node:path";
 import * as nodeFsPromises from "node:fs/promises";
 import * as nodeUtilTypes from "node:util/types";
-import { getModules, loadModules } from "file-folder-loader";
+import { getModulePaths, loadModulePaths } from "file-folder-loader";
 import type { EventEmitter } from "node:events";
 import type { PathLike } from "node:fs";
-import type { ProcessMode, ExportType, EventExecute, EventHandlerModuleExport, EventHandlerKeys, LoadEventHandlersOptions, BindEventListenerOverride } from "./types.js";
+import type { ExportType, EventExecute, EventHandlerModuleExport, EventHandlerKeys, LoadEventHandlersOptions, BindEventListenerOverride } from "./types.js";
 
 const EVENT_EMITTER_ADD_LISTENER_METHOD_NAMES = ["on", "once", "addListener", "prependListener", "prependOnceListener"];
 
@@ -14,13 +14,12 @@ const DEFAULT_EVENT_HANDLER_KEY_NAMES = {
     isPrepend: "isPrepend",
     execute: "execute",
 };
-const DEFAULT_PROCESS_MODE = "concurrent";
+
 const DEFAULT_EXPORT_TYPE = "default";
 const DEFAULT_NAMED_EXPORT = "eventHandler";
-const DEFAULT_IMPORT_MODES = ["concurrent", "sequential"];
 const DEFAULT_EXPORT_TYPES = ["default", "named", "all"];
 const DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS = {
-    processMode: DEFAULT_PROCESS_MODE,
+    isConcurrent: true,
     exportType: DEFAULT_EXPORT_TYPE,
     listenerPrependedArgs: [],
     preferredExportName: DEFAULT_NAMED_EXPORT,
@@ -141,7 +140,7 @@ async function loadEventHandlers(
         throw new Error(`Invalid options: '${options}'. Must be a an object.`);
     }
     const eventHandlerOptions = { ...DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS, ...(options || {}) };
-    const processMode = eventHandlerOptions.processMode;
+    const isConcurrent = eventHandlerOptions.isConcurrent;
     const exportType = eventHandlerOptions.exportType;
     const listenerPrependedArgs = eventHandlerOptions.listenerPrependedArgs;
     const preferredExportName = eventHandlerOptions.preferredExportName;
@@ -161,8 +160,8 @@ async function loadEventHandlers(
     if (typeof executeKeyName !== "string" || executeKeyName.trim() === "") {
         throw new Error(`Invalid preferredEventHandlerKeys execute: '${executeKeyName}'. Must be a non-empty string.`);
     }
-    if (!DEFAULT_IMPORT_MODES.includes(processMode)) {
-        throw new Error(`Invalid process mode: '${processMode}'. Must be one of string: ${DEFAULT_IMPORT_MODES.join(", ")}`);
+    if (typeof isConcurrent !== "boolean") {
+        throw new Error(`Invalid isConcurrent: '${isConcurrent}'. Must be a boolean.`);
     }
     if (!DEFAULT_EXPORT_TYPES.includes(exportType)) {
         throw new Error(`Invalid export type: '${exportType}'. Must be one of string: ${DEFAULT_EXPORT_TYPES.join(", ")}`);
@@ -173,8 +172,8 @@ async function loadEventHandlers(
     if (typeof isRecursive !== "boolean") {
         throw new Error(`Invalid isRecursive: '${isRecursive}'. Must be a boolean.`);
     }
-    const filePaths = await getModules(absolutePath, { isRecursive: isRecursive, processMode: processMode });
-    await loadModules(
+    const filePaths = await getModulePaths(absolutePath, { isRecursive: isRecursive, isConcurrent: isConcurrent });
+    await loadModulePaths(
         filePaths,
         async function (moduleExport, fileUrlHref) {
             if (typeof bindEventListenerOverride !== "function") {
@@ -187,9 +186,8 @@ async function loadEventHandlers(
             }
             bindEventListenerOverride(eventEmitterLike, moduleExport as EventHandlerModuleExport, fileUrlHref, listenerPrependedArgs);
         },
-        { exportType: exportType as ExportType, preferredExportName: preferredExportName, processMode: processMode as ProcessMode },
+        { exportType: exportType as ExportType, preferredExportName: preferredExportName, isConcurrent: isConcurrent },
     );
-    return true;
 }
 
 export { loadEventHandlers };

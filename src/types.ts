@@ -24,17 +24,15 @@ interface EventHandlerKeys {
     execute?: string | "execute";
 }
 
-type ProcessMode = "concurrent" | "sequential";
-
 type ExportType = "default" | "named" | "all";
 
-type preferredExportName = string | "eventHandler" | "*";
+type PreferredExportName = string | "eventHandler" | "*";
 
 interface LoadEventHandlersOptions {
-    processMode?: ProcessMode;
+    isConcurrent?: boolean;
     exportType?: ExportType;
     listenerPrependedArgs?: unknown[];
-    preferredExportName?: preferredExportName;
+    preferredExportName?: PreferredExportName;
     preferredEventHandlerKeys?: EventHandlerKeys;
     isRecursive?: boolean;
 }
@@ -54,7 +52,6 @@ export type {
     EventHandlerModuleExport,
     EventHandlerModuleNamespace,
     EventName,
-    ProcessMode,
     LoadEventHandlersOptions,
-    preferredExportName,
+    PreferredExportName,
 };
