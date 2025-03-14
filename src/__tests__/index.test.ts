@@ -64,15 +64,15 @@ describe("event-handler-loader", () => {
                 loadEventHandlers(defaultDir, eventEmitter, { isConcurrent: false }, function (emitter, moduleExport, fileUrlHref, listenerPrependedArgs) {
                     expect(emitter).toBeInstanceOf(nodeEvents.EventEmitter);
                     expect(typeof moduleExport === "object").toBeTruthy();
-                    expect(typeof fileUrlHref === "string").toBeUndefined();
+                    expect(typeof fileUrlHref === "string").toBeTruthy();
                     expect(listenerPrependedArgs.length).toBe(0);
                 }),
             ).resolves.toBeUndefined();
             await expect(
                 loadEventHandlers(defaultDir, eventEmitter, { isConcurrent: false }, async function (emitter, moduleExport, fileUrlHref, listenerPrependedArgs) {
                     expect(emitter).toBeInstanceOf(nodeEvents.EventEmitter);
-                    expect(typeof moduleExport === "object").toBeUndefined();
-                    expect(typeof fileUrlHref === "string").toBeUndefined();
+                    expect(typeof moduleExport === "object").toBeTruthy();
+                    expect(typeof fileUrlHref === "string").toBeTruthy();
                     expect(listenerPrependedArgs.length).toBe(0);
                     await new Promise<void>(function (resolve) {
                         resolve();
