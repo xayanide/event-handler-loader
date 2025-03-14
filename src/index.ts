@@ -49,18 +49,25 @@ function hasAddListenerMethods(object: EventEmitter): boolean {
 }
 
 function getMergedListenerArgs(prependedArgs: unknown[], emittedArgs: unknown[]) {
+    /**
+     * I made sure it returns a new array instead of the mutable approach which is
+     * directly modifying prependedArgs by Array.prototype.push(...emittedArgs),
+     * while that may improve performance but it introduces potential side effects, so I didn't go with that.
+     * - xaya
+     */
     return prependedArgs.length > 0 ? [...prependedArgs, ...emittedArgs] : emittedArgs;
 }
 
 /**
-The listenerPrependedArgs option serves as a way to prepend custom values to the arguments
-passed to the event handlers' execute() method when an event is emitted.
-isAsyncFunction check is used so that 'await' will not promisify normal functions.
-I will not use arrow functions or anonymous functions for these.
-The function declarations remain named for verbosity and verbose error stack traces.
-Note: isAsyncFunction cannot detect if a regular non-async function is async if the regular non-async function returns a Promise.
-From what I've read, the only way to detect if a regular function returns a promise is to call it, which is not preferred in this case.
-*/
+ * The listenerPrependedArgs option serves as a way to prepend custom values to the arguments
+ * passed to the event handlers' execute() method (listener callback) when an event is emitted.
+ * isAsyncFunction() is used as a check so that 'await' will not promisify normal functions.
+ * I will not use arrow functions or anonymous functions for the listener's callbacks,
+ * they will instead remain named for verbosity and verbose error stack traces.
+ *
+ * Note: isAsyncFunction cannot detect if a regular non-async function is async if the regular non-async function returns a Promise.
+ * From what I've read, the only way to detect if a regular function returns a promise is to call it, which is not preferred in this case.
+ */
 function getAsyncAwareListener(executeMethod: EventExecute, listenerPrependedArgs: unknown[]) {
     if (nodeUtilTypes.isAsyncFunction(executeMethod)) {
         async function asyncListener(...listenerEmittedArgs: unknown[]) {
