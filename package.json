@@ -64,7 +64,6 @@
     "format:write": "npm run format:base -- --write",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "prepare": "npm run build",
     "start": "node dist/index.js",
     "test": "npm run test:base",
     "test:base": "cross-env NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest",
@@ -72,7 +71,7 @@
     "test:watch": "npm run test:base -- --watch"
   },
   "dependencies": {
-    "file-folder-loader": "^4.1.0"
+    "file-folder-loader": "^4.1.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
