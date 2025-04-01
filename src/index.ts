@@ -48,6 +48,13 @@ function hasAddListenerMethods(object: EventEmitter): boolean {
     return EVENT_EMITTER_ADD_LISTENER_METHOD_NAMES.every(hasMethod);
 }
 
+function getMergedOptions<T>(userOptions: Partial<T> | undefined, defaultOptions: T): T {
+    if (userOptions !== undefined && (userOptions === null || typeof userOptions !== "object" || Array.isArray(userOptions))) {
+        throw new Error(`Invalid options: '${String(userOptions)}'. Must be an object.`);
+    }
+    return { ...defaultOptions, ...(userOptions || {}) };
+}
+
 function getMergedListenerArgs(prependedArgs: unknown[], emittedArgs: unknown[]) {
     /**
      * I made sure it returns a new array instead of the mutable approach which is
@@ -55,7 +62,10 @@ function getMergedListenerArgs(prependedArgs: unknown[], emittedArgs: unknown[])
      * while that may improve performance but it introduces potential side effects, so I didn't go with that.
      * - xaya
      */
-    return prependedArgs.length > 0 ? [...prependedArgs, ...emittedArgs] : emittedArgs;
+    if (prependedArgs.length > 0) {
+        return [...prependedArgs, ...emittedArgs];
+    }
+    return emittedArgs;
 }
 
 /**
@@ -146,13 +156,13 @@ async function loadEventHandlers(
     if (options !== undefined && (options === null || typeof options !== "object" || Array.isArray(options))) {
         throw new Error(`Invalid options: '${options}'. Must be a an object.`);
     }
-    const eventHandlerOptions = { ...DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS, ...(options || {}) };
-    const isConcurrent = eventHandlerOptions.isConcurrent;
-    const exportType = eventHandlerOptions.exportType;
-    const listenerPrependedArgs = eventHandlerOptions.listenerPrependedArgs;
-    const preferredExportName = eventHandlerOptions.preferredExportName;
-    const isRecursive = eventHandlerOptions.isRecursive;
-    const preferredEventHandlerKeys = { ...DEFAULT_EVENT_HANDLER_KEY_NAMES, ...(eventHandlerOptions.preferredEventHandlerKeys || {}) };
+    const userOptions = getMergedOptions(options as object, DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS);
+    const isConcurrent = userOptions.isConcurrent;
+    const exportType = userOptions.exportType;
+    const listenerPrependedArgs = userOptions.listenerPrependedArgs;
+    const preferredExportName = userOptions.preferredExportName;
+    const isRecursive = userOptions.isRecursive;
+    const preferredEventHandlerKeys = getMergedOptions(userOptions.preferredEventHandlerKeys, DEFAULT_EVENT_HANDLER_KEY_NAMES);
     const { name: nameKeyName, isOnce: isOnceKeyName, isPrepend: isPrependKeyName, execute: executeKeyName } = preferredEventHandlerKeys;
     /** Use 'not' operator to not omit undefined and empty strings passed in options */
     if (typeof nameKeyName !== "string" || nameKeyName.trim() === "") {
