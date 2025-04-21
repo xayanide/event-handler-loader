@@ -74,7 +74,7 @@
     "file-folder-loader": "^4.1.4"
   },
   "devDependencies": {
-    "@eslint/js": "^9.24.0",
+    "@eslint/js": "^9.25.1",
     "@jest/globals": "^29.7.0",
     "@semantic-release/git": "^10.0.1",
     "@stylistic/eslint-plugin": "^4.2.0",
