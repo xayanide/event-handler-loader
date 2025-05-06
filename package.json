@@ -82,7 +82,7 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^22.15.14",
     "cross-env": "^7.0.3",
-    "eslint": "^9.25.1",
+    "eslint": "^9.26.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-erasable-syntax-only": "^0.3.1",
     "globals": "^16.0.0",
