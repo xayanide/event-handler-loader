@@ -80,7 +80,7 @@
     "@stylistic/eslint-plugin": "^4.4.0",
     "@tsconfig/strictest": "^2.0.5",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.15.24",
+    "@types/node": "^22.15.29",
     "cross-env": "^7.0.3",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
