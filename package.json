@@ -85,7 +85,7 @@
     "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-erasable-syntax-only": "^0.3.1",
-    "globals": "^16.4.0",
+    "globals": "^16.5.0",
     "jest": "^29.7.0",
     "prettier": "3.6.2",
     "rimraf": "^6.1.0",
