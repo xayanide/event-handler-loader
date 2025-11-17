@@ -12,7 +12,7 @@ npm install event-handler-loader
 
 Working with events usually means manually setting up event handlers on an EventEmitter instance. It’s okhi for small projects, but as things grow, it can quickly become messy and repetitive.
 
-This utility simplifies things by automatically loading event handlers from a directory and attaching them to an EventEmitter-like instance—basically, any object with the same event-handling methods as Node.js’ EventEmitter. The tradeoff? It follows a somewhat fixed structure and might not mesh well with more OOP-heavy approaches.
+This utility simplifies things by automatically loading event handlers from a directory and attaching them to an EventEmitter-like instance, basically any object with the same event-handling methods as Node.js’ EventEmitter. The tradeoff? It follows a somewhat fixed structure and might not mesh well with more OOP-heavy approaches.
 
 > [!NOTE]
 > An *"EventEmitter-like instance"* is any object that implements the same event-handling methods as Node.js' `EventEmitter`.
