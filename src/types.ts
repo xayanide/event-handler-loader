@@ -29,7 +29,7 @@ type ExportType = "default" | "named" | "all";
 type PreferredExportName = string | "eventHandler" | "*";
 
 interface LoadEventHandlersOptions {
-    isConcurrent?: boolean;
+    concurrent?: boolean;
     exportType?: ExportType;
     listenerPrependedArgs?: unknown[];
     preferredExportName?: PreferredExportName;

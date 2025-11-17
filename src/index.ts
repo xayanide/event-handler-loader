@@ -19,7 +19,7 @@ const DEFAULT_EXPORT_TYPE = "default";
 const DEFAULT_NAMED_EXPORT = "eventHandler";
 const DEFAULT_EXPORT_TYPES = ["default", "named", "all"];
 const DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS = {
-    isConcurrent: true,
+    concurrent: true,
     exportType: DEFAULT_EXPORT_TYPE,
     listenerPrependedArgs: [],
     preferredExportName: DEFAULT_NAMED_EXPORT,
@@ -157,7 +157,7 @@ async function loadEventHandlers(
         throw new Error(`Invalid options: '${options}'. Must be a an object.`);
     }
     const userOptions = getMergedOptions(options as object, DEFAULT_LOAD_EVENT_HANDLERS_OPTIONS);
-    const isConcurrent = userOptions.isConcurrent;
+    const isConcurrent = userOptions.concurrent;
     const exportType = userOptions.exportType;
     const listenerPrependedArgs = userOptions.listenerPrependedArgs;
     const preferredExportName = userOptions.preferredExportName;
@@ -189,7 +189,7 @@ async function loadEventHandlers(
     if (typeof isRecursive !== "boolean") {
         throw new Error(`Invalid isRecursive: '${isRecursive}'. Must be a boolean.`);
     }
-    const filePaths = await getModulePaths(absolutePath, { isRecursive: isRecursive, isConcurrent: isConcurrent });
+    const filePaths = await getModulePaths(absolutePath, { recursive: isRecursive, concurrent: isConcurrent });
     await loadModulePaths(
         filePaths,
         async function (moduleExport, fileUrlHref) {
@@ -203,7 +203,7 @@ async function loadEventHandlers(
             }
             bindEventListenerOverride(eventEmitterLike, moduleExport as EventHandlerModuleExport, fileUrlHref, listenerPrependedArgs);
         },
-        { exportType: exportType as ExportType, preferredExportName: preferredExportName, isConcurrent: isConcurrent },
+        { exportType: exportType as ExportType, preferredExportName: preferredExportName, concurrent: isConcurrent },
     );
 }
 

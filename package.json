@@ -71,27 +71,27 @@
     "test:watch": "npm run test:base -- --watch"
   },
   "dependencies": {
-    "file-folder-loader": "^4.1.2"
+    "file-folder-loader": "^5.0.4"
   },
   "devDependencies": {
-    "@eslint/js": "^9.22.0",
-    "@jest/globals": "^29.7.0",
+    "@eslint/js": "^9.39.1",
+    "@jest/globals": "^30.2.0",
     "@semantic-release/git": "^10.0.1",
-    "@stylistic/eslint-plugin": "^4.2.0",
-    "@tsconfig/strictest": "^2.0.5",
-    "@types/jest": "^29.5.14",
-    "@types/node": "^22.13.10",
-    "cross-env": "^7.0.3",
-    "eslint": "^9.22.0",
-    "eslint-config-prettier": "^10.1.1",
-    "eslint-plugin-erasable-syntax-only": "^0.3.0",
-    "globals": "^16.0.0",
-    "jest": "^29.7.0",
-    "prettier": "3.5.3",
-    "rimraf": "^6.0.1",
-    "semantic-release": "^24.2.3",
-    "ts-jest": "^29.2.6",
-    "typescript": "^5.8.2",
-    "typescript-eslint": "^8.26.1"
+    "@stylistic/eslint-plugin": "^5.5.0",
+    "@tsconfig/strictest": "^2.0.8",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.10.1",
+    "cross-env": "^10.1.0",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-erasable-syntax-only": "^0.4.0",
+    "globals": "^16.5.0",
+    "jest": "^30.2.0",
+    "prettier": "3.6.2",
+    "rimraf": "^6.1.0",
+    "semantic-release": "^25.0.2",
+    "ts-jest": "^29.4.5",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.47.0"
   }
 }
