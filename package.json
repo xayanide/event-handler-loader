@@ -75,7 +75,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
-    "@jest/globals": "^30.4.1",
+    "@jest/globals": "^30.5.1",
     "@semantic-release/git": "^10.0.1",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@tsconfig/strictest": "^2.0.8",
